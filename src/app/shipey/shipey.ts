@@ -5,8 +5,8 @@ const NxN = 16;
 const SIZE = 20;
 const MARGIN = 40;
 const LIMIT = 6;
-const BG_COLOR = "rgba(203,213,225,.1)";
-
+const BG_COLOR = "rgba(203,213,225,0)";
+const BOX_COLOR = "rgba(255,255,225,.1)"
 const mappings = atlasjson.mappings;
 const size = atlasjson.size;
 const atlasSize = size;
@@ -122,14 +122,18 @@ export async function drawShip(spec:unknown, stats:object, color:Color = [255, 2
     ctx.fillRect(...rect);
 
     ctx.translate(MARGIN / 2, MARGIN / 2);
-    ctx.globalCompositeOperation = "multiply";
+    //ctx.globalCompositeOperation = "multiply";
     for(let i = 0; i < NxN; i++) {
         for(let j = 0; j < NxN; j++) {
             let size = SIZE * .8;
             let offset = SIZE * .1;
-            drawImage(ctx, "parts/sel1x1.png", i * SIZE + offset, j * SIZE + offset, size, size);
+            ctx.fillStyle = BOX_COLOR;
+            let rect = [i * SIZE + offset, j * SIZE + offset, size, size]
+            ctx.fillRect(...rect)
+            //drawImage(ctx, "parts/sel1x1.png", i * SIZE + offset, j * SIZE + offset, size, size);
         }
     }
+    ctx.fillStyle = BG_COLOR;
 
     ctx.globalCompositeOperation = "source-over";
 

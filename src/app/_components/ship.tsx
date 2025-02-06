@@ -7,12 +7,12 @@ import Image from "next/image"
 import { useEffect, useState } from "react";
 import { drawShip, getStats} from "../shipey/shipey";
 
-export default  function Ship(){
+export default  function Ship(data:ShipData){
     //const test = await api.ships.test({name:"Cascade"})
-    const data = {
-        name: "test",
-        shipey: "shipeyJwYXJ0cyI6W3sicG9zIjpbMCwwXSwidHlwZSI6Ik1vdW50MzAiLCJkaXIiOjB9LHsicG9zIjpbLTEwLC00MF0sInR5cGUiOiJFbmdpbmUwNCIsImRpciI6MH0seyJwb3MiOlsxMCwtMzBdLCJ0eXBlIjoiQmF0dGVyeTF4MSIsImRpciI6MH0seyJwb3MiOlsxMCwtNTBdLCJ0eXBlIjoiV2luZzF4MU5vdGNoIiwiZGlyIjowfSx7InBvcyI6WzAsMF0sInR5cGUiOiJUb3JwVHVycmV0IiwiZGlyIjowfV0sIm5hbWUiOiIiLCJhaVJ1bGVzIjpbXX0="
-    }
+    // const data = {
+    //     name: "test",
+    //     shipey: "shipeyJwYXJ0cyI6W3sicG9zIjpbMCwwXSwidHlwZSI6Ik1vdW50MzAiLCJkaXIiOjB9LHsicG9zIjpbLTEwLC00MF0sInR5cGUiOiJFbmdpbmUwNCIsImRpciI6MH0seyJwb3MiOlsxMCwtMzBdLCJ0eXBlIjoiQmF0dGVyeTF4MSIsImRpciI6MH0seyJwb3MiOlsxMCwtNTBdLCJ0eXBlIjoiV2luZzF4MU5vdGNoIiwiZGlyIjowfSx7InBvcyI6WzAsMF0sInR5cGUiOiJUb3JwVHVycmV0IiwiZGlyIjowfV0sIm5hbWUiOiIiLCJhaVJ1bGVzIjpbXX0="
+    // }
 
     
     const [img,setImg] = useState("loading.svg")
@@ -47,7 +47,7 @@ export default  function Ship(){
 //         console.log(testImg.data)
 //    }
     return (
-        <div className="p-5 border-slate-400 border-2 rounded-lg mx-4 my-1 w-1/6">
+        <div className="p-5 bg-black bg-opacity-5 rounded-lg m-4 w-1/6">
             <div className="overflow-auto">
             <h2 className=" text-4xl font-bold text-center"> {data.name} </h2>
             </div>

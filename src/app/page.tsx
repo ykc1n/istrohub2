@@ -1,20 +1,27 @@
+
+'use client'
 import Link from "next/link";
 
 import { LatestPost } from "~/app/_components/post";
-import { api, HydrateClient } from "~/trpc/server";
+import { api } from "~/trpc/react";
 import Ship from "./_components/ship";
 
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
+import { Ships } from "./_components/ships";
+export default function Home() {
 
-  void api.post.getLatest.prefetch();
+  //const [ships,setShips] = useState([])
+
+  const ships= api.ships.testGet.useQuery({
+    count:10
+  })
+
 
   return (
-    <HydrateClient>
+
       <main className=" min-h-screen bg-gradient-to-b from-[#ffffff] to-[#9e9e9e] text-gray-500">
       <div className="bg-slate-100">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Istrohub
+          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] ml-4">
+            Shipyard
           </h1>
 
           
@@ -26,16 +33,9 @@ export default async function Home() {
           Upload a ship  
           </button>
         </div>
+        
+        <Ships ships={ships.isSuccess ? ships.data : []}/>
 
-        <div className="mx-36 flex   px-4 py-16">
-          
-
-          <Ship/>
-          <Ship/>
-          <Ship/>
-                      
-            </div>
           </main>
-        </HydrateClient>
       );
 }

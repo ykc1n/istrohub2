@@ -3,7 +3,15 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
 import { doc,getDocs, limit, query, collection, where } from "firebase/firestore";
 import { drawShip,getStats } from "~/app/shipey/shipey";
+import { DummyShipArr } from "./shipArrData";
+import { count } from "console";
 
+declare global {
+    interface ShipData {
+    name:string,
+    shipey:string
+}
+}
 
 
 export  const shiprouter = createTRPCRouter({
@@ -37,5 +45,18 @@ export  const shiprouter = createTRPCRouter({
         //console.log(img)
             return {data: img.src}
         }
-    )
+    ),
+
+    testGet: publicProcedure.
+    input(z.object({
+        count: z.number()
+    })).
+    query( ({input})=>{
+        if(DummyShipArr.length < input.count){
+            return DummyShipArr
+        }
+
+        return DummyShipArr.slice(0,input.count)
+    })
+
 })
