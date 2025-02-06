@@ -2,7 +2,7 @@ import { db } from "~/server/db";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
 import { doc,getDocs, limit, query, collection, where } from "firebase/firestore";
-import { drawShip,getStats } from "~/server/shipey";
+import { drawShip,getStats } from "~/app/shipey/shipey";
 
 
 

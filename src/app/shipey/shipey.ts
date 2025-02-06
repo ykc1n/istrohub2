@@ -1,6 +1,6 @@
 import { Canvas,Image,loadImage, createCanvas } from 'canvas';
 import {parts} from './parts'
-import {atlasjson} from './atlas'
+import {atlasjson} from 'src/app/shipey/atlas'
 const NxN = 16;
 const SIZE = 20;
 const MARGIN = 40;
@@ -18,9 +18,9 @@ type Color = [number,number,number,number]
 
 let atlas:Image | null = null;
 
-await loadImage("src/server/assets/atlas.png").then(image => {
-    console.log("loaded!")
-    atlas = image});
+// await loadImage("/atlas.png").then(image => {
+//     console.log("loaded!")
+//     atlas = image});
 
 
 export function drawImage(ctx:CanvasRenderingContext2D, file:string, x:number, y:number, w = SIZE, h = SIZE, dir = 0, flip = false, color:Color, colorMode:ColorMode) {
@@ -81,7 +81,15 @@ export function drawPart(ctx:CanvasRenderingContext2D, name:string, x:number, y:
         drawImage(ctx, "parts/engineJumpPip.png", xt, yt, wt, ht, -dir * Math.PI / 2, flip);
 }
 
-export function drawShip(spec:unknown, stats:object, color:Color = [255, 255, 255, 255]) {
+export async function drawShip(spec:unknown, stats:object, color:Color = [255, 255, 255, 255]) {
+    
+    if(atlas==null){
+        await loadImage("/atlas.png").then(image=>{
+            console.log("loaded image in client!")
+            atlas = image
+        })
+    }
+    
     const canvas = createCanvas(NxN * SIZE + MARGIN, NxN * SIZE + MARGIN);
     const ctx = canvas.getContext('2d');
 
@@ -147,9 +155,9 @@ export function drawShip(spec:unknown, stats:object, color:Color = [255, 255, 25
     }
 
     //require("child_process").spawn("firefox", [canvas.toDataURL()]);
-    const image = new Image();
-    image.src = canvas.toDataURL();
-    return image;
+    //const image = new Image();
+    //image.src = canvas.toDataURL();
+    return canvas.toDataURL();
 }
 
 export function getImage(file:string, flip = false, color:Color, colorMode:ColorMode) {
