@@ -1,7 +1,7 @@
 
 'use client'
 import Link from "next/link";
-
+import Image from "next/image";
 import { LatestPost } from "~/app/_components/post";
 import { api } from "~/trpc/react";
 import Ship from "./_components/ship";
@@ -11,9 +11,13 @@ export default function Home() {
 
   //const [ships,setShips] = useState([])
 
-  const ships= api.ships.testGet.useQuery({
+  const shipQuery= api.ships.getShips.useQuery({
     count:10
   })
+
+
+ 
+
 
 
   return (
@@ -33,8 +37,19 @@ export default function Home() {
           Upload a ship  
           </button>
         </div>
+        { shipQuery.isSuccess && shipQuery.data != null ? 
+          Ships({ships:shipQuery.data})
+         : (
+        <Image
+        className=" mx-auto"
+        src = "loading.svg"
+        width={500}
+        height={500}
+        alt="Loading ships..."
+        /> )
+        }
         
-        <Ships ships={ships.isSuccess ? ships.data : []}/>
+
 
           </main>
       );

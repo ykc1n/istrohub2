@@ -13,7 +13,11 @@ export function Ships(props:{ships:ShipData[]}){
           props.ships.map( (ship:ShipData) => {
             i+=1
             return (
-            Ship(ship)
+            <Ship
+            key = {i}
+            name = {ship.name}
+            shipey= {ship.shipey}
+            /> 
             )
           })
         
