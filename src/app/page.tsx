@@ -5,15 +5,45 @@ import Image from "next/image";
 import { LatestPost } from "~/app/_components/post";
 import { api } from "~/trpc/react";
 import Ship from "./_components/ship";
+import { useState } from "react";
 
 import { Ships } from "./_components/ships";
+
+function PaginationButton( props:
+  {callback:  () => void,
+  contents:string
+  }){
+    <button
+    className=""
+    onClick={
+      props.callback
+    }
+    >
+      {props.contents}
+    </button>
+
+}
+
+
+const paginationSection = "rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
+
 export default function Home() {
 
-  //const [ships,setShips] = useState([])
+
+
+  const [page,setPage] = useState(0)
+  const filters =  new Map<string, string>()
+  const utils = api.useUtils()
+  // const [queryState, setQueryState] = useState(true)
 
   const shipQuery= api.ships.getShips.useQuery({
-    count:10
+    count:10,
+    page: page,
+    filters: filters
   })
+
+
+
 
 
  
@@ -30,15 +60,44 @@ export default function Home() {
 
           
       </div>
-      
-          
-        <div className="flex justify-center">
-          <button className="p-2 rounded-xl bg-slate-500 text-slate-50 transition-colors hover:text-slate-50 hover:bg-slate-400">
+       <div className="flex justify-center my-4">
+
+         
+          <button className="mt-4 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white">
           Upload a ship  
           </button>
+          </div>
+          
+        <div className="flex justify-center">
+          <form action={
+            async (e) =>{
+              const value = e.get('name')
+              if(typeof value != 'string' || value == ""){
+                filters.delete('name');
+                await utils.invalidate();
+                return;
+              }
+              filters.set('name', value);
+
+              await utils.invalidate();
+            }
+          }>
+
+          
+          <input name='name' className="mt-4 rounded-lg text-black text-2xl font-semibold bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-20">
+          </input>
+          <button className="mt-4 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
+          type="submit"
+          onSubmit={e => e.preventDefault()}
+          >
+           
+            Search!
+          </button> 
+          </form>
         </div>
-        { shipQuery.isSuccess && shipQuery.data != null ? 
+        { (shipQuery.isSuccess && shipQuery.data != null) && !shipQuery.isFetching ? 
           Ships({ships:shipQuery.data})
+          
          : (
         <Image
         className=" mx-auto"
@@ -48,6 +107,57 @@ export default function Home() {
         alt="Loading ships..."
         /> )
         }
+
+        <div className="mt-4 p-2 rounded white flex justify-center mx-auto  py-12">
+        
+         <div className="px-9">
+        <button className={paginationSection}
+        onClick={          
+          function(){
+            if(page > 0){
+            setPage( 0)
+            }
+          }
+          }
+        >
+          {"First Page"}
+          
+        </button>
+
+        <button className={paginationSection}
+                onClick={          
+                  function(){
+                    if(page > 0){
+                    setPage(  page  => page - 1)
+                    }
+                  }
+                  }
+        >
+          {"Previous Page"}
+        </button>
+        </div>
+
+        <div className= {paginationSection}>
+          {page}
+        </div>
+
+        <div className="px-9">
+
+        
+         <button className={paginationSection}
+         onClick={          
+          function(){
+            
+            setPage(  page  => page + 1)
+            
+          }
+          }>
+          {"Next Page"}
+        </button> 
+</div>
+
+
+        </div>
         
 
 

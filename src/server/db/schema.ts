@@ -2,12 +2,14 @@
 import { create } from "domain";
 import { sql } from "drizzle-orm";
 import {
+  text,
   index,
   integer,
   pgTableCreator,
   timestamp,
   varchar,
-  pgTable
+  pgTable,
+  jsonb
 } from "drizzle-orm/pg-core";
 
 
@@ -16,9 +18,9 @@ import {
 export const ships = pgTable(
     "ships",{
         id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-        name: varchar("name"),
-        shipey: varchar("shipey") 
+        name: text("name"),
+        shipey: text("shipey"),
+        stats: jsonb("stats"),
+        shipey_json: jsonb("shipey_json")
     }
-
-
 )

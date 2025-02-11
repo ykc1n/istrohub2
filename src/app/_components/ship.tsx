@@ -62,6 +62,7 @@ export default  function Ship(data:ShipData){
             
         <div className="flex justify-center p-2">
             <ShipCopyButton shipey={data.shipey} /> 
+            <ShipCopyButton shipey={JSON.stringify(stats)} />
         </div>
 
                        
