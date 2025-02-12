@@ -29,20 +29,35 @@ export  const shiprouter = createTRPCRouter({
     input(z.object({
         count: z.number(),
         page: z.number(),
-        filters: z.map(z.string(),z.string())
+        filters: z.map(z.string(),z.object({condition: z.string(), value: z.string()}))
    
 
     }))
     .query( async ({input, ctx}) => {
         const filter:SQL[] = []
+        console.log(input)
         
         for( const f of input.filters){
-            console.log("hi")
-            console.log(f)
-            filter.push(sql`stats->>${f[0]} = ${f[1]}`)
+            const condition = f[1].condition
+            let  comparitor = f[1].value
+            // console.log(f[1])
+            // if(f[0] != "name"){
+            //     f[0] = 
+            // }
+            let term = ''
+            if(f[0] == "name"){
+                term =  `stats->>'${f[0]}'`
+                 comparitor = `'${comparitor}'`
+            } else {
+                 term =  `CAST(stats->'${f[0]}' AS INTEGER)`
+
+            }
+
+            console.log(`${term} ${condition} ${comparitor}`)
+            filter.push(sql.raw(`${term} ${condition} ${comparitor}`))
            
         }
-
+        console.log(filter);
         const q = await ctx.db
         .select({id:ships.id, name: ships.name , shipey: ships.shipey})
         .from(ships)

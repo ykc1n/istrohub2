@@ -1,10 +1,11 @@
+'use client'
 import Ship from "./ship"
 
 
 let i = 0
 
 export function Ships(props:{ships:ShipData[]}){
-    console.log(props.ships)
+    //console.log(props.ships)
     return (
         <div className="mx-auto flex justify-center flex-wrap px-4 py-16">
 

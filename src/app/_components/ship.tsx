@@ -4,7 +4,7 @@
 import { api } from "~/trpc/react"
 import { ShipCopyButton } from "./shipbutton"
 import Image from "next/image"
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { drawShip, getStats} from "../shipey/shipey";
 
 export default  function Ship(data:ShipData){
@@ -16,29 +16,50 @@ export default  function Ship(data:ShipData){
 
     
     const [img,setImg] = useState("loading.svg")
-    const spec = JSON.parse(atob(data.shipey.slice(4)))
-    const stats = getStats(spec)
+    const [spec,setSpec] = useState(JSON.parse(atob(data.shipey.slice(4))));
+    
 
     //const  testImg = drawShip(spec,stats)
+    // 
+    // if (spec!= newSpec){
+    //     setSpec(newSpec)
+    // }
+    const i = useMemo( async ()=>{
+        const stats = getStats(spec)
+        const i = await drawShip(spec, stats)
+        setImg(i);
+        return i
+    }, [spec])
     
-    useEffect( 
-         ()=>{
-            const abortController = new AbortController();
-            const getShipImg = async () =>{
-                try{
-            const i = await drawShip(spec,stats)
-            setImg(i)
-        } catch (e){
-            console.log("error!")
-        }
-        }
+    // useEffect( 
+    //      ()=>{
 
-        void getShipImg()
-        return ()=>{
-            abortController.abort()
-        }
-    }
-    )
+           
+
+    //         const abortController = new AbortController();
+    //         const getShipImg = async () =>{
+    //             try{
+
+                    
+                       
+    //         const spec = JSON.parse(atob(data.shipey.slice(4)))
+    //         console.log("wtf")
+    //         const stats = getStats(spec)
+    //         const i = await drawShip(spec,stats)
+    //         setImg(i)
+            
+                    
+    //     } catch (e){
+    //         console.log("error!")
+    //     }
+    //     }
+
+    //     void getShipImg()
+    //     return ()=>{
+    //         abortController.abort()
+    //     }
+    // }
+    // )
 
 //api.ships.getimg.useQuery({ shipey: data.shipey });
 //     console.log(testImg.status)
@@ -62,7 +83,7 @@ export default  function Ship(data:ShipData){
             
         <div className="flex justify-center p-2">
             <ShipCopyButton shipey={data.shipey} /> 
-            <ShipCopyButton shipey={JSON.stringify(stats)} />
+            {/* <ShipCopyButton shipey={JSON.stringify(stats)} /> */}
         </div>
 
                        
