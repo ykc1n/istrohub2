@@ -7,21 +7,28 @@ import { api } from "~/trpc/react";
 import Ship from "./_components/ship";
 import { useState } from "react";
 
-import { Ships } from "./_components/ships";
+import { Ships } from "./_components/shipLoader";
 
-function PaginationButton( props:
-  {callback:  () => void,
-  contents:string
-  }){
-    <button
-    className=""
-    onClick={
-      props.callback
-    }
-    >
-      {props.contents}
-    </button>
+function EnergyBars(){
+  return      <div className="mx-8  grid items-end justify-items-center "> 
+  
+      
+        
 
+      <div className="p-3  bg-cyan-200  rounded h-[50%] row-start-1 col-start-1 ">
+        
+        </div> 
+
+      <div className="p-2  bg-black bg-slate-300 rounded-full h-[99%] row-start-1 col-start-1 ">
+        
+      </div>
+     
+     <div className="p-2  bg-green-500  rounded-full h-[50%] row-start-1 col-start-1 ">
+        
+        </div> 
+    
+
+      </div> 
 }
 
 function Filter(props:{
@@ -30,7 +37,7 @@ function Filter(props:{
 }){
 
   const [selectedFilter,changeSelectedFilter] = useState('hp') as [FilterName, (filterCondition: FilterName)=>void ]
-  const [filterApplied, applyFilter] = useState(false)
+ // const [filterApplied, applyFilter] = useState(false)
   const [condition,setCondtion] = useState('=') as [FilterCondition, (filterCondition: FilterCondition)=>void ]
   const [value, setValue] = useState('')
   return (
@@ -65,8 +72,8 @@ function Filter(props:{
       setCondtion(e.target.value as FilterCondition)}}
     >
       <option value={"="}> Is equal to </option>
-      <option value={">"}> Is less than </option>
-      <option value={"<"}> Is greater than </option>
+      <option value={"<"}> Is less than </option>
+      <option value={">"}> Is greater than </option>
       
     </select>
 
@@ -77,10 +84,9 @@ function Filter(props:{
     >
     
     </input>
-    <input type="button" className={!filterApplied ? "rounded-lg  font-semibold text-center bg-black bg-opacity-10 px-4 py-1 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white" :  "rounded-lg  font-semibold text-center bg-black px-4 py-1 mx-2 transition-colors duration-300 bg-opacity-75 text-white"}
+    <input type="button" className={ "rounded-lg  font-semibold text-center bg-black bg-opacity-10 px-4 py-1 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white" }
     onClick={ (e)=>{
         e.preventDefault()
-       applyFilter(true)
        props.apply(selectedFilter,{
         condition: condition,
         value: value
@@ -89,19 +95,110 @@ function Filter(props:{
     }
     }
      value= 
-      {!filterApplied ? "Apply" : "Applied" }
+      {"Apply" }
       />
     
- 
-    <button className="rounded-lg  font-semibold text-center bg-black bg-opacity-10 px-4 py-1 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white" >
-      Remove Filter
-    </button>
     </div>
 
     </div>
 
   )
 }
+
+function AppliedFilter(props:{
+  filter:{
+    name: FilterName,
+    filterOpts: FilterOptions
+  }
+  remove: (name:FilterName)=> void
+}){
+  return(
+    <div className=" bg-black bg-opacity-10 rounded-full py-1 px-2 text-sm mx-1 my-auto transition-colors duration-300 hover:bg-opacity-20">
+       <button className="m-1 rounded-full border border-gray-500 transition-colors duration-300 hover:bg-black hover:text-white px-2 hover:border-black"
+       onClick={(e)=>{
+        e.preventDefault()
+        props.remove(props.filter.name)
+       }}
+       >
+        X
+      </button>
+      
+      {
+        `where: ${props.filter.name} ${props.filter.filterOpts.condition} ${props.filter.filterOpts.value}` 
+      }
+
+     
+      </div>
+  )
+}
+
+function DetailedShip(props:{
+  img:string,
+  stats:object,
+  weapons:object,
+  name:string
+}){
+
+  const renderedStats = []
+
+  for(const stat in props.stats){
+    let newStats = (<div
+    key={stat+props.stats[stat]}
+    className="py-1 text-lg font-bold"
+    >
+      {stat} : {props.stats[stat]} 
+
+    </div>)
+    renderedStats.push(newStats)
+  }
+  return (
+    <div className="p-4 bg-black bg-opacity-5 rounded-lg flex max-h-1/99">
+    <div>
+
+      <button className="rounded-full text-black text-lg font-semibold text-center bg-black bg-opacity-10 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-600 hover:text-white">
+        X
+      </button>
+
+    </div>
+    <div className="flex">
+
+    
+    <div>
+
+    <div className="text-5xl font-bold text-center">{props.name}</div>
+
+    <Image
+    src={props.img}
+    width={300}
+    height={300}
+    alt="none"
+    />
+
+    <button className={paginationSection}>
+      Copy ship
+    </button>
+
+
+    
+    </div>
+
+    <div>
+      <button className={paginationSection}>
+        Stats
+      </button>
+      <div className="overflow-auto grid grid-auto-columns:10%">
+
+      
+      {
+        renderedStats
+      }
+    </div>
+    </div>
+    </div>
+    </div>
+  )
+}
+
 
 
 const paginationSection = "rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
@@ -126,7 +223,14 @@ export default function Home() {
 
 
   const [page,setPage] = useState(0)
-  const filters =  new Map<FilterName, FilterOptions>()
+  const [filters,setFilter] =  useState(new Map<FilterName, FilterOptions>())
+  const [selectedShip, setSelectedShip] = useState({
+    id: -1,
+    img: "loading.svg",
+    name: "none",
+    stats: {
+    }
+  })
   const utils = api.useUtils()
   // const [queryState, setQueryState] = useState(true)
 
@@ -144,31 +248,76 @@ export default function Home() {
 const availableFilters = ["hp", "mass", "speed"]
 
 
+
+function renderSelectedShip(){
+  if (selectedShip.id < 0){
+    return <></>
+  }
+  console.log(selectedShip.stats.weapons)
+  let fixedStats = selectedShip.stats
+  delete fixedStats.weapons
+  delete fixedStats.ai
+  delete fixedStats.center
+  return( <DetailedShip
+  img={selectedShip.img}
+  stats = {fixedStats}
+  name={selectedShip.name}
+  weapons
+  /> )
+}
+
 function applyFilter(name:FilterName,opts:FilterOptions){
-  filters.set(name, opts);
+  setFilter(filters => {filters.set(name, opts)
+    return new Map(filters);
+  });
   console.log(filters);
 }
 
- 
-let i = 0
+function removeFilter(name:FilterName){
+  setFilter(filters => {filters.delete(name)
+    return new Map(filters);
+  })
+}
 
+ 
+const renderedFilters:JSX.Element[] = []; 
+function renderFilters(){
+      if(filters.size >0 ){
+            for( const filt of filters){
+
+             const renderedFilter = <AppliedFilter
+                filter={
+                  {
+                  name:filt[0],
+                  filterOpts:filt[1]
+                }
+              }
+              remove={removeFilter}
+              key={filt[0]+filt[1].condition+filt[1].value}
+                /> 
+              console.log()
+              renderedFilters.push(renderedFilter);
+            }
+          }
+            return renderedFilters; 
+}
 
   return (
 
       <main className=" min-h-screen bg-gradient-to-b from-[#ffffff] to-[#9e9e9e] text-gray-500">
-      <div className="bg-slate-100">
+      <div className="bg-slate-100 flex justify-between">
           <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] ml-4">
             Shipyard
           </h1>
 
-          
-      </div>
-       <div className="flex justify-center my-4">
-
-         
-          <button className="mt-4 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white">
+            
+          <button className="mt-4 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-1 my-4 mx-[10%] transition-colors duration-300 hover:bg-opacity-75 hover:text-white">
           Upload a ship  
           </button>
+      </div>
+       <div className="flex my-2">
+
+       
           </div>
           
         <div className="flex justify-center">
@@ -186,24 +335,42 @@ let i = 0
             }
           }>
 
+          <div className="">
+          {/* <input name='name' className="mt-4 rounded-lg text-black text-2xl font-semibold bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-20">
+          </input> */}
+
           
-          <input name='name' className="mt-4 rounded-lg text-black text-2xl font-semibold bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-20">
-          </input>
+
+          
 
 
-
-          <button className="mt-4 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
+          <button className="mt-2 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
           type="submit"
           onSubmit={e => e.preventDefault()}
           >
             Search!
           </button> 
 
-          <div className="py-4 ">
+          <div className="flex flex- flex-wrap mt-4">
 
+
+
+          {
+            
+         renderFilters() 
+        }
+
+          
+          </div>
+          </div>
+
+
+
+          <div className="py-4 ">
+{/* 
             <button className={paginationSection}>
-              Add Filter
-            </button>
+              New Filter
+            </button> */}
 
             {Filter({availableFilters: availableFilters, apply: applyFilter})}
 
@@ -211,20 +378,43 @@ let i = 0
           </div>
 
           </form>
+
+
         </div>
+          <div className="flex justify-center">
+{/*
+            <DetailedShip
+            img="loading.svg"
+            name="samson"
+            stats={{
+              hp:100,
+              mass:100,
+              speed:100
+            }}
+            />
+*/
+renderSelectedShip()
+}
+
+          </div>
         { (shipQuery.isSuccess && shipQuery.data != null) && !shipQuery.isFetching ? 
           // Ships({ships:shipQuery.data})
                   ( <div className="mx-auto flex justify-center flex-wrap px-4 py-16">
           
                   {
                     
-                    shipQuery.data.map( (ship:ShipData) => {
-                      i+=1
+                    shipQuery.data.map( (ship) => {
+                      //i+=1
                       return (
                       <Ship
-                      key = {i}
+                      key = {ship.id}
+                      
+                      id={ship.id}
                       name = {ship.name}
-                      shipey= {ship.shipey}
+                      parts= {ship.parts}
+                      selected = {ship.id === selectedShip.id}
+                      clickFunction= {setSelectedShip}
+                      
                       /> 
                       )
                     })

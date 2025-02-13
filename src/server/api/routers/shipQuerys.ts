@@ -6,12 +6,7 @@ import { count } from "console";
 import { ships } from "~/server/db/schema";
 import { Sql } from "postgres";
 import { SQL,exists, sql, and, not, isNull, eq} from "drizzle-orm";
-declare global {
-    interface ShipData {
-    name:string,
-    shipey:string
-}
-}
+
 
 
 
@@ -59,12 +54,12 @@ export  const shiprouter = createTRPCRouter({
         }
         console.log(filter);
         const q = await ctx.db
-        .select({id:ships.id, name: ships.name , shipey: ships.shipey})
+        .select({id:ships.id, name: ships.name , parts: ships.shipey_json})
         .from(ships)
         .where(
             and(
             not( isNull(ships.name) ),
-            not( isNull(ships.shipey)),
+            not( isNull(ships.shipey_json)),
             ...filter
         )
     )
