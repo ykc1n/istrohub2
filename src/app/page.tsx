@@ -139,20 +139,56 @@ function DetailedShip(props:{
   name:string
 }){
 
-  const renderedStats = []
+  const titleMap = new Map([
+    ['hp',['HP','hp']],
+    ['cost',['Cost','$']],
+   ['mass',['Mass','T']], 
+   ['thrust',['Thrust','kN']], 
+    ['turnSpeed',['Turn Rate','°']],
+    ['genEnergy',['Energy Gen', 'E/s']],
+    ['storeEnergy',['Energy Capacity', 'E']],
+    ['shield',['Shield','sh']],
+    ['genShield',['Shield Gen','sh/s']],
+    ['moveEnergy',['Movement Energy','E']],
+    ['fireEnergy',['Firing Energy','E']],
+    ['allEnergy',['Total Energy Usage','E/s']],
+    ['damage',['Burst Damage','Burst']],
+    ['range',['Max Range', 'm']],
+    ['dps',['DPS','dps']],
+    ['radius',['Size','m']],
+    ])
 
+  const renderedStats = []
+  //console.log(props.stats.mass)
   for(const stat in props.stats){
-    let newStats = (<div
-    key={stat+props.stats[stat]}
-    className="py-1 text-lg font-bold"
+    let curStat = props.stats[stat]
+
+    if(!titleMap.has(stat)){
+      continue
+    }
+
+
+    if(!Number.isInteger(curStat) && (typeof curStat) != 'string' ){
+      console.log(curStat)  
+      curStat =  curStat.toFixed(2)
+      }
+    
+    const newStats = (<div
+    key={stat+curStat}
+    className="py-1 text-lg font-bold p-2 bg-black bg-opacity-5 m-1 rounded-lg transition-colors duration-300 hover:bg-opacity-10"
     >
-      {stat} : {props.stats[stat]} 
+      <p className="text-lg text-nowrap text-center m-1 overflow-auto">{titleMap.get(stat)[0]}</p>
+     <p className="font-normal text-center"> {
+     
+    curStat  
+     
+     } </p>
 
     </div>)
     renderedStats.push(newStats)
   }
   return (
-    <div className="p-4 bg-black bg-opacity-5 rounded-lg flex max-h-1/99">
+    <div className="p-4 bg-black bg-opacity-5 rounded-lg flex max-h-[40em] max-w-[60em]">
     <div>
 
       <button className="rounded-full text-black text-lg font-semibold text-center bg-black bg-opacity-10 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-600 hover:text-white">
@@ -169,24 +205,27 @@ function DetailedShip(props:{
 
     <Image
     src={props.img}
-    width={300}
-    height={300}
+    width={500}
+    height={500}
     alt="none"
+    
     />
+    <div className='flex justify-center'>
 
+   
     <button className={paginationSection}>
       Copy ship
     </button>
-
+ </div>
 
     
     </div>
 
-    <div>
+    <div className="overflow-auto">
       <button className={paginationSection}>
         Stats
       </button>
-      <div className="overflow-auto grid grid-auto-columns:10%">
+      <div className="grid grid-rows-4 grid-cols-3 " >
 
       
       {
@@ -253,16 +292,17 @@ function renderSelectedShip(){
   if (selectedShip.id < 0){
     return <></>
   }
-  console.log(selectedShip.stats.weapons)
+  //console.log(selectedShip.stats.weapons)
+  let shipweapons = selectedShip.stats.weapons;
   let fixedStats = selectedShip.stats
   delete fixedStats.weapons
-  delete fixedStats.ai
+  delete fixedStats.ais
   delete fixedStats.center
   return( <DetailedShip
   img={selectedShip.img}
   stats = {fixedStats}
   name={selectedShip.name}
-  weapons
+  weapons = {selectedShip.stats.weapons}
   /> )
 }
 

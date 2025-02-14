@@ -1,7 +1,7 @@
 import { Canvas,Image,loadImage, createCanvas } from 'canvas';
 import {parts} from './parts'
 import {atlasjson} from 'src/app/shipey/atlas'
-const NxN = 16;
+const NxN = 24;
 const SIZE = 20;
 const MARGIN = 40;
 const LIMIT = 6;
