@@ -8,6 +8,7 @@ import Ship from "./_components/ship";
 import { useState } from "react";
 
 import { Ships } from "./_components/shipLoader";
+import { title } from "process";
 
 function EnergyBars(){
   return      <div className="mx-8  grid items-end justify-items-center "> 
@@ -136,65 +137,124 @@ function DetailedShip(props:{
   img:string,
   stats:object,
   weapons:object,
-  name:string
+  name:string,
+  id:number,
+  clickFunction:(param:(map:Map<number,object>)=>object)=>void,
+  compareFunction:(param:(arr:[])=>[])=>void,
+  statsToCompare:object,
+  //isBeingCompared:boolean
 }){
 
+  const [isBeingCompared, setBeingCompared] = useState(false);
+
+  
+
+
+
   const titleMap = new Map([
-    ['hp',['HP','hp']],
-    ['cost',['Cost','$']],
-   ['mass',['Mass','T']], 
-   ['thrust',['Thrust','kN']], 
-    ['turnSpeed',['Turn Rate','°']],
-    ['genEnergy',['Energy Gen', 'E/s']],
-    ['storeEnergy',['Energy Capacity', 'E']],
-    ['shield',['Shield','sh']],
-    ['genShield',['Shield Gen','sh/s']],
-    ['moveEnergy',['Movement Energy','E']],
-    ['fireEnergy',['Firing Energy','E']],
-    ['allEnergy',['Total Energy Usage','E/s']],
-    ['damage',['Burst Damage','Burst']],
-    ['range',['Max Range', 'm']],
-    ['dps',['DPS','dps']],
-    ['radius',['Size','m']],
+    ['hp',['HP','hp',true]],
+    ['cost',['Cost','$',false]],
+    ['mass',['Mass','T',false]],
+    ['speed',['Speed', 'm/s',true]],
+    ['thrust',['Thrust','kN',true]], 
+    ['turnSpeed',['Turn Rate','°',true]],
+    ['genEnergy',['Energy Gen', 'E/s',true]],
+    ['storeEnergy',['Energy Capacity', 'E',true]],
+    ['shield',['Shield','sh',true]],
+    ['genShield',['Shield Gen','sh/s',true]],
+    ['moveEnergy',['Movement Energy','E/s',false]],
+    ['fireEnergy',['Firing Energy','E',false]],
+    ['allEnergy',['E use','E/s',false]],
+    ['damage',['Burst Damage','Burst',true]],
+    ['range',['Max Range', 'm',true]],
+    ['dps',['DPS','dps',true]],
+    ['radius',['Size','m',false]],
     ])
 
   const renderedStats = []
   //console.log(props.stats.mass)
   for(const stat in props.stats){
     let curStat = props.stats[stat]
-
-    if(!titleMap.has(stat)){
+    let statColor = "bg-black bg-opacity-5 "
+    if(!titleMap.has(stat) || curStat == 0){
       continue
+    }
+    if(isBeingCompared){
+    const compStat =  props.statsToCompare[stat]
+    
+    if(compStat){
+    console.log(compStat)
     }
 
 
+    if( titleMap.get(stat)[2] ^ (curStat > compStat)){
+      statColor = "bg-green-500 bg-opacity-15"
+    } else if( curStat == compStat){
+      statColor = 'bg-black bg-opacity-5'
+    } else {
+      statColor = "bg-red-200 bg-opactity-15"
+    }
+  }
+
+
     if(!Number.isInteger(curStat) && (typeof curStat) != 'string' ){
-      console.log(curStat)  
+      //console.log(curStat)  
       curStat =  curStat.toFixed(2)
       }
     
     const newStats = (<div
     key={stat+curStat}
-    className="py-1 text-lg font-bold p-2 bg-black bg-opacity-5 m-1 rounded-lg transition-colors duration-300 hover:bg-opacity-10"
+    className={`py-1 text-lg font-bold p-2 ${statColor} m-1 rounded-lg transition-colors duration-300 hover:bg-opacity-10`}
     >
       <p className="text-lg text-nowrap text-center m-1 overflow-auto">{titleMap.get(stat)[0]}</p>
      <p className="font-normal text-center"> {
      
-    curStat  
+    curStat  +' '+titleMap.get(stat)[1]
      
      } </p>
 
     </div>)
     renderedStats.push(newStats)
   }
+  if(isBeingCompared == false && Object.keys(props.statsToCompare).length > 0 ){
+    setBeingCompared(true);
+  }
   return (
-    <div className="p-4 bg-black bg-opacity-5 rounded-lg flex max-h-[40em] max-w-[60em]">
+    <div className="p-4 bg-black bg-opacity-5 rounded-lg flex max-h-[40em] max-w-[60em] shrink-0 transition-transform transition-discrete">
     <div>
 
-      <button className="rounded-full text-black text-lg font-semibold text-center bg-black bg-opacity-10 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-600 hover:text-white">
+      <button className="rounded-full text-black text-lg font-semibold text-center bg-black bg-opacity-10 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-600 hover:text-white"
+      onClick={(e) =>{props.clickFunction(
+        (map)=>{
+        console.log("hmmmm")
+        const newMap = new Map(map)
+        console.log(newMap)
+        newMap.delete(props.id)
+        console.log(newMap)
+        console.log(props.id)
+        return newMap
+      })
+    }
+  }
+      >
         X
       </button>
 
+      <button
+      className="rounded-full text-black text-lg font-semibold text-center bg-black bg-opacity-10 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-600 hover:text-white"
+      
+        onClick={(e)=>{props.compareFunction(
+          (arr)=>{
+            console.log(arr)
+            console.log("id pushed!")
+            const newArr = [...arr, props.id]
+            //newArr.push(props.id)
+            return newArr
+          })
+        }}
+        >
+        C
+      </button>
     </div>
     <div className="flex">
 
@@ -263,13 +323,8 @@ export default function Home() {
 
   const [page,setPage] = useState(0)
   const [filters,setFilter] =  useState(new Map<FilterName, FilterOptions>())
-  const [selectedShip, setSelectedShip] = useState({
-    id: -1,
-    img: "loading.svg",
-    name: "none",
-    stats: {
-    }
-  })
+  const [selectedShips, setSelectedShips] = useState( new Map<number,{id:number,stats:object,name:string, img:string}>())
+  const [comparedShips, setComparedShips] = useState([])
   const utils = api.useUtils()
   // const [queryState, setQueryState] = useState(true)
 
@@ -286,11 +341,32 @@ export default function Home() {
 
 const availableFilters = ["hp", "mass", "speed"]
 
-
+if(comparedShips.length >= 2){
+  console.log("comparing ships!")
+  const newMap = selectedShips
+  const newShip1 = selectedShips.get(comparedShips[0])
+  newShip1.statsToCompare = selectedShips.get(comparedShips[1])?.stats
+  newMap.delete(comparedShips[0])
+  //setSelectedShips(newMap);
+  newMap.set(comparedShips[0], newShip1)
+  const newShip2 = selectedShips.get(comparedShips[1])
+  newShip2.statsToCompare = selectedShips.get(comparedShips[0])?.stats
+  newMap.delete(comparedShips[1])
+    //setSelectedShips(newMap);
+  newMap.set(comparedShips[1], newShip2)
+  setSelectedShips(newMap);
+  setComparedShips([]);
+  
+}
+console.log("re-render!")
 
 function renderSelectedShip(){
+  const renderedSelectedShips = []
+  console.log(selectedShips)
+  for (const ship of selectedShips){
+  const selectedShip = ship[1]
   if (selectedShip.id < 0){
-    return <></>
+    continue
   }
   //console.log(selectedShip.stats.weapons)
   let shipweapons = selectedShip.stats.weapons;
@@ -298,12 +374,30 @@ function renderSelectedShip(){
   delete fixedStats.weapons
   delete fixedStats.ais
   delete fixedStats.center
-  return( <DetailedShip
+  if(comparedShips.length >= 2){
+
+  
+  // if(selectedShip.id == comparedShips[0]){
+  //   selectedShip.statsToCompare = selectedShips.get(comparedShips[1])?.stats
+  // } else if( selectedShip.id == comparedShips[1]){
+  //   selectedShip.statsToCompare = selectedShips.get(comparedShips[0])?.stats
+  // }
+  
+  }
+  renderedSelectedShips.push( <DetailedShip
+  key={selectedShip.id}
   img={selectedShip.img}
   stats = {fixedStats}
   name={selectedShip.name}
   weapons = {selectedShip.stats.weapons}
+  clickFunction={setSelectedShips}
+  id={selectedShip.id}
+  statsToCompare={selectedShip.statsToCompare}
+  compareFunction={setComparedShips}
   /> )
+  }
+  
+  return renderedSelectedShips
 }
 
 function applyFilter(name:FilterName,opts:FilterOptions){
@@ -391,7 +485,7 @@ function renderFilters(){
             Search!
           </button> 
 
-          <div className="flex flex- flex-wrap mt-4">
+          <div className="flex flex- flex-wrap mt-4 transition-all duration-300">
 
 
 
@@ -421,7 +515,8 @@ function renderFilters(){
 
 
         </div>
-          <div className="flex justify-center">
+        <div className="flex justify-center">
+          <div className="flex gap-4 overflow-auto py-4 mx-5">
 {/*
             <DetailedShip
             img="loading.svg"
@@ -436,6 +531,7 @@ function renderFilters(){
 renderSelectedShip()
 }
 
+          </div>
           </div>
         { (shipQuery.isSuccess && shipQuery.data != null) && !shipQuery.isFetching ? 
           // Ships({ships:shipQuery.data})
@@ -452,8 +548,8 @@ renderSelectedShip()
                       id={ship.id}
                       name = {ship.name}
                       parts= {ship.parts}
-                      selected = {ship.id === selectedShip.id}
-                      clickFunction= {setSelectedShip}
+                      selected = {selectedShips.has(ship.id)}
+                      clickFunction= {setSelectedShips}
                       
                       /> 
                       )

@@ -69,12 +69,16 @@ export default  function Ship(props:{
              className=" transition-all duration-300 scale-100 hover:scale-105"
              onClick={ (e) => {
                 console.log("clicked..")
-                props.clickFunction({
-                    id: props.id, 
+                props.clickFunction( (selectedShips) => {
+                    let newMap = new Map(selectedShips)
+                    newMap.set(props.id,
+                    {id: props.id, 
                     name: props.name, 
                     img: img,
-                    stats: getStats(spec)
-                
+                    stats: getStats(spec),
+                    statsToCompare: {}
+                    })
+                    return newMap
                 })
              }
             }
