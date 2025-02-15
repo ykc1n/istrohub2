@@ -19,8 +19,8 @@ export const ships = pgTable(
     "ships",{
         id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
         name: text("name"),
-        shipey: text("shipey"),
         stats: jsonb("stats"),
-        shipey_json: jsonb("shipey_json")
+        shipey_json: jsonb("shipey_json"),
+        color: text("color")
     }
 )

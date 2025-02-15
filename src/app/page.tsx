@@ -9,6 +9,7 @@ import { useState } from "react";
 
 import { Ships } from "./_components/shipLoader";
 import { title } from "process";
+import Upload from "./_components/upload";
 
 function EnergyBars(){
   return      <div className="mx-8  grid items-end justify-items-center "> 
@@ -220,7 +221,7 @@ function DetailedShip(props:{
     setBeingCompared(true);
   }
   return (
-    <div className="p-4 bg-black bg-opacity-5 rounded-lg flex max-h-[40em] max-w-[60em] shrink-0 transition-transform transition-discrete">
+    <div className="p-4 bg-black bg-opacity-5 rounded-lg flex  shrink-0 transition-transform transition-discrete">
     <div>
 
       <button className="rounded-full text-black text-lg font-semibold text-center bg-black bg-opacity-10 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-600 hover:text-white"
@@ -259,7 +260,7 @@ function DetailedShip(props:{
     <div className="flex">
 
     
-    <div>
+    <div className="max-w-[500] max-h-[20%]">
 
     <div className="text-5xl font-bold text-center">{props.name}</div>
 
@@ -325,6 +326,7 @@ export default function Home() {
   const [filters,setFilter] =  useState(new Map<FilterName, FilterOptions>())
   const [selectedShips, setSelectedShips] = useState( new Map<number,{id:number,stats:object,name:string, img:string}>())
   const [comparedShips, setComparedShips] = useState([])
+  const [uploadShipShown, setUploadShipShown] = useState(false)
   const utils = api.useUtils()
   // const [queryState, setQueryState] = useState(true)
 
@@ -436,16 +438,31 @@ function renderFilters(){
             return renderedFilters; 
 }
 
+function renderModal(){
+  if(uploadShipShown){
+          return <Upload/>
+        }
+        return (<></>)
+}
+
   return (
 
+    
       <main className=" min-h-screen bg-gradient-to-b from-[#ffffff] to-[#9e9e9e] text-gray-500">
-      <div className="bg-slate-100 flex justify-between">
+      <div className=" flex justify-between">
           <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] ml-4">
             Shipyard
           </h1>
 
+
             
-          <button className="mt-4 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-1 my-4 mx-[10%] transition-colors duration-300 hover:bg-opacity-75 hover:text-white">
+          <button className="mt-4 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-1 my-4 mx-[10%] transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
+          onClick={
+            (e)=>{
+              setUploadShipShown(!uploadShipShown)
+            }
+          }
+          >
           Upload a ship  
           </button>
       </div>
@@ -453,6 +470,9 @@ function renderFilters(){
 
        
           </div>
+                    {
+   renderModal()
+    }
           
         <div className="flex justify-center">
           <form action={
@@ -535,7 +555,7 @@ renderSelectedShip()
           </div>
         { (shipQuery.isSuccess && shipQuery.data != null) && !shipQuery.isFetching ? 
           // Ships({ships:shipQuery.data})
-                  ( <div className="mx-auto flex justify-center flex-wrap px-4 py-16">
+                  ( <div className="mx-auto 2xl:flex  grid grid-cols-[repeat(auto-fill,_minmax(30%,_1fr))] justify-center flex-wrap px-4 py-16">
           
                   {
                     
@@ -550,6 +570,7 @@ renderSelectedShip()
                       parts= {ship.parts}
                       selected = {selectedShips.has(ship.id)}
                       clickFunction= {setSelectedShips}
+                      color = {ship.color}
                       
                       /> 
                       )

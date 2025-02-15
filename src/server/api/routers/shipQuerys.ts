@@ -6,6 +6,7 @@ import { count } from "console";
 import { ships } from "~/server/db/schema";
 import { Sql } from "postgres";
 import { SQL,exists, sql, and, not, isNull, eq} from "drizzle-orm";
+import { Input } from "postcss";
 
 
 
@@ -54,7 +55,7 @@ export  const shiprouter = createTRPCRouter({
         }
         console.log(filter);
         const q = await ctx.db
-        .select({id:ships.id, name: ships.name , parts: ships.shipey_json})
+        .select({id:ships.id, name: ships.name , parts: ships.shipey_json, color:ships.color})
         .from(ships)
         .where(
             and(
@@ -74,6 +75,26 @@ export  const shiprouter = createTRPCRouter({
 
 
     }),
+
+    uploadShip: publicProcedure
+    .input(
+        z.object({
+            title: z.string(),
+            stats: z.any(),
+            parts: z.any(),
+            color: z.string()
+        })
+    ).
+    mutation(async ({input, ctx}) => {
+        await ctx.db.
+        insert(ships)
+        .values({
+            name: input.title,
+            stats: input.stats,
+            shipey_json: input.parts,
+            color: input.color
+        })
+    })
 
 //     migrate: publicProcedure.
 //     input( z.object({
