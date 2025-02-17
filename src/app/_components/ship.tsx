@@ -92,7 +92,8 @@ export default  function Ship(props:{
                     img: img,
                     stats: getStats(spec),
                     parts: props.parts,
-                    statsToCompare: {}
+                    statsToCompare: {},
+                    color: props.color
                     })
                     return newMap
                 })

@@ -35,7 +35,7 @@ function EnergyBars(){
 }
 
 function Filter(props:{
-  availableFilters: string[],
+  availableFilters: Map<string, [string,string[]]>,
   apply: (filterName:FilterName ,filterOptions:FilterOptions) => void
 }){
 
@@ -43,6 +43,22 @@ function Filter(props:{
  // const [filterApplied, applyFilter] = useState(false)
   const [condition,setCondtion] = useState('=') as [FilterCondition, (filterCondition: FilterCondition)=>void ]
   const [value, setValue] = useState('')
+  const operatorMap = new Map<string, string>([
+    ['=', 'is equal to'],
+    ['<', 'is less than'],
+    ['>', 'is greater than']
+  ])
+  const filterTargets = []
+  function renderFilterTargets(){
+    for(const filter of props.availableFilters){
+      filterTargets.push(
+        <option key={filter[0]} value={filter[0]}>
+          {filter[1][0]}
+        </option>
+      )
+    }
+  }
+  renderFilterTargets()
   return (
 
     <div className="flex justify-center gap-3 py-2">
@@ -55,15 +71,7 @@ function Filter(props:{
           }} 
       >
       {
-      props.availableFilters.map( (filter) => {
-        return (
-          <option key={filter} value={filter}
-          
-          >
-            {filter}
-          </option>
-        )
-      })
+        filterTargets
     }
     </select>
     </div>
@@ -145,7 +153,8 @@ function DetailedShip(props:{
   compareFunction:(param:(arr:[])=>[])=>void,
   statsToCompare:object,
   //isBeingCompared:boolean
-  parts:object
+  parts:object, 
+  color:string
 }){
 
   const [isBeingCompared, setBeingCompared] = useState(false);
@@ -258,6 +267,8 @@ function DetailedShip(props:{
     <div className="min-w-[50%] ">
 
     <div className="text-5xl font-bold text-center">{props.name}</div>
+    <div className="italic text-center"> {props.stats.name}</div>
+    <div className="italic"> #{props.color}</div>
     <div className="flex justify-center">
 
    
@@ -325,8 +336,27 @@ type FilterOptions = {
   condition: FilterCondition,
   value: string
 }
+const numberComparison = ['=', '<', '>']
+const statFilterMap = new Map<string,[string,  string[] ]>(
+  [
+  
+  ["hp",['hp',numberComparison]],
+  ["cost",['Cost',numberComparison]],
+  ['mass',['Mass',numberComparison]],
+  ['speed',['Speed',numberComparison]],
+  ['range',['Range',numberComparison]],
+  ['dps',['DPS',numberComparison]],
+  ['damage',['Burst Damage',numberComparison]],
+  ['radius', ['Size', numberComparison]],
+  ['thrust',['Thrust',numberComparison]],
+  ['turnSpeed',['Turn Rate',numberComparison]],
+  ['genEnergy',['Energy Generaton',numberComparison]],
+  ['storeEnergy',['Energy Storage',numberComparison]],
+  ['moveEnergy',['Movement Energy', numberComparison]],
+  ['fireEnergy',['Firing Energy', numberComparison]],
+  ['shield',['Shield', numberComparison]]
 
-
+])
 
 export default function Home() {
 
@@ -341,7 +371,7 @@ export default function Home() {
   // const [queryState, setQueryState] = useState(true)
 
   const shipQuery= api.ships.getShips.useQuery({
-    count:10,
+    count:20,
     page: page,
     filters: filters
   }
@@ -411,6 +441,7 @@ function renderSelectedShip(){
   statsToCompare={selectedShip.statsToCompare}
   compareFunction={setComparedShips}
   parts={selectedShip.parts}
+  color={selectedShip.color}
   /> 
  )
   }
@@ -542,8 +573,7 @@ function renderModal(){
               New Filter
             </button> */}
 
-            {Filter({availableFilters: availableFilters, apply: applyFilter})}
-
+            {Filter({availableFilters: statFilterMap, apply: applyFilter})}
 
           </div>
 
@@ -551,21 +581,9 @@ function renderModal(){
 
 
         </div>
-        <div className="flex justify-center ">
-          <div className="flex gap-4 flex-wrap  overflow-auto py-4 mx-5">
-{/*
-            <DetailedShip
-            img="loading.svg"
-            name="samson"
-            stats={{
-              hp:100,
-              mass:100,
-              speed:100
-            }}
-            />
-*/
-renderSelectedShip()
-}
+        <div className="flex justify-center w-[100%]">
+          <div className="flex justify-center gap-4 flex-wrap  overflow-auto py-4 mx-5">
+          {renderSelectedShip()}
 
           </div>
           </div>

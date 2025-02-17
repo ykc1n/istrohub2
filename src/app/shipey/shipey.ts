@@ -180,13 +180,13 @@ export function getImage(file:string, flip = false, color:Color, colorMode:Color
         return null;
     }
 
-    let uv = mappings[file].uv;
-    let x = uv[0] * atlasSize;
-    let y = (1 - uv[1]) * atlasSize;
-    let x1 = uv[2] * atlasSize;
-    let y1 = (1 - uv[3]) * atlasSize;
-    let w = x1 - x;
-    let h = y1 - y;
+    const uv = mappings[file].uv;
+    const x = uv[0] * atlasSize;
+    const y = (1 - uv[1]) * atlasSize;
+    const x1 = uv[2] * atlasSize;
+    const y1 = (1 - uv[3]) * atlasSize;
+    const w = x1 - x;
+    const h = y1 - y;
 
     let cCanvas = createCanvas(w, h);
     let cCtx = cCanvas.getContext('2d');

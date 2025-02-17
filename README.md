@@ -1,9 +1,9 @@
 
 TODO:   
-- [ ] Redo the data schema (again...)
+- [x] Redo the data schema (again...)
   - Dont upload entire shipey LOL
   - Upload stats as JSON file for querying
-- [ ] Ship Uploading
+- [x] Ship Uploading
 - [ ] Ship Searching
 - [ ] Ship Stats
 - [ ] Website Visual changes
