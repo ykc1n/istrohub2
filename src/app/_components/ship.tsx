@@ -6,7 +6,7 @@ import Image from "next/image"
 import { useEffect, useMemo, useState } from "react";
 import { drawShip, getStats, hexToRgb} from "../shipey/shipey";
 
-function ShipCopyButton( props: {shipey:string;}){
+export function ShipCopyButton( props: {shipey:string;}){
     function copyText(text:string){
             //console.log(text);
           void navigator.clipboard.writeText(text)
@@ -91,6 +91,7 @@ export default  function Ship(props:{
                     name: props.name, 
                     img: img,
                     stats: getStats(spec),
+                    parts: props.parts,
                     statsToCompare: {}
                     })
                     return newMap

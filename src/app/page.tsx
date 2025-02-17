@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Ships } from "./_components/shipLoader";
 import { title } from "process";
 import Upload from "./_components/upload";
+import { ShipCopyButton } from "./_components/ship";
 
 function EnergyBars(){
   return      <div className="mx-8  grid items-end justify-items-center "> 
@@ -144,6 +145,7 @@ function DetailedShip(props:{
   compareFunction:(param:(arr:[])=>[])=>void,
   statsToCompare:object,
   //isBeingCompared:boolean
+  parts:object
 }){
 
   const [isBeingCompared, setBeingCompared] = useState(false);
@@ -177,6 +179,7 @@ function DetailedShip(props:{
   for(const stat in props.stats){
     let curStat = props.stats[stat]
     let statColor = "bg-black bg-opacity-5 "
+    let hoverColor = 'hover:bg-opacity-10'
     if(!titleMap.has(stat) || curStat == 0){
       continue
     }
@@ -190,10 +193,13 @@ function DetailedShip(props:{
 
     if( titleMap.get(stat)[2] ^ (curStat > compStat)){
       statColor = "bg-green-500 bg-opacity-15"
+      hoverColor = 'hover:bg-opacity-25'
     } else if( curStat == compStat){
       statColor = 'bg-black bg-opacity-5'
+      hoverColor = 'hover:bg-opacity-10'
     } else {
-      statColor = "bg-red-200 bg-opactity-15"
+      statColor = "bg-red-300 bg-opacity-50"
+      hoverColor = 'hover:bg-opacity-80'
     }
   }
 
@@ -205,9 +211,9 @@ function DetailedShip(props:{
     
     const newStats = (<div
     key={stat+curStat}
-    className={`py-1 text-lg font-bold p-2 ${statColor} m-1 rounded-lg transition-colors duration-300 hover:bg-opacity-10`}
+    className={`text-base font-bold p-1 ${statColor} basis-0 flex-grow m-1 rounded-lg transition-colors duration-300 ${hoverColor}`}
     >
-      <p className="text-lg text-nowrap text-center m-1 overflow-auto">{titleMap.get(stat)[0]}</p>
+      <p className="text-xs md:text-base  text-nowrap text-center m-1 overflow-auto">{titleMap.get(stat)[0]}</p>
      <p className="font-normal text-center"> {
      
     curStat  +' '+titleMap.get(stat)[1]
@@ -221,7 +227,10 @@ function DetailedShip(props:{
     setBeingCompared(true);
   }
   return (
-    <div className="p-4 bg-black bg-opacity-5 rounded-lg flex  shrink-0 transition-transform transition-discrete">
+    
+
+    
+    <div className="p-4 bg-black bg-opacity-5 rounded-lg flex  transition-transform transition-discrete max-w-[47%] overflow-auto">
     <div>
 
       <button className="rounded-full text-black text-lg font-semibold text-center bg-black bg-opacity-10 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-600 hover:text-white"
@@ -241,61 +250,62 @@ function DetailedShip(props:{
         X
       </button>
 
-      <button
-      className="rounded-full text-black text-lg font-semibold text-center bg-black bg-opacity-10 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-600 hover:text-white"
-      
-        onClick={(e)=>{props.compareFunction(
-          (arr)=>{
-            console.log(arr)
-            console.log("id pushed!")
-            const newArr = [...arr, props.id]
-            //newArr.push(props.id)
-            return newArr
-          })
-        }}
-        >
-        C
-      </button>
     </div>
-    <div className="flex">
+    <div className="flex justify-center w-[100%]">
+    <div className=" ">
 
     
-    <div className="max-w-[500] max-h-[20%]">
+    <div className="min-w-[50%] ">
 
     <div className="text-5xl font-bold text-center">{props.name}</div>
+    <div className="flex justify-center">
 
+   
     <Image
     src={props.img}
     width={500}
     height={500}
     alt="none"
-    
-    />
+    className="min-w-30%"
+    /> </div>
     <div className='flex justify-center'>
 
    
-    <button className={paginationSection}>
-      Copy ship
-    </button>
+<ShipCopyButton
+shipey={('ship'+btoa(JSON.stringify(props.parts)))}
+
+/> 
+
+<button   className={paginationSection}      onClick={(e)=>{props.compareFunction(
+          (arr)=>{
+            //console.log(arr)
+            //console.log("id pushed!")
+            const newArr = [...arr, props.id]
+            //newArr.push(props.id)
+            return newArr
+          })
+        }} >
+  Compare
+</button>
  </div>
 
     
     </div>
 
-    <div className="overflow-auto">
-      <button className={paginationSection}>
+    
+      {/* <button className={paginationSection}>
         Stats
-      </button>
-      <div className="grid grid-rows-4 grid-cols-3 " >
-
+      </button> */}
+      <div className=" py-3 grid flex-wrap grid-cols-2 grid-flow-row-dense" >
       
       {
         renderedStats
       }
+    
     </div>
     </div>
-    </div>
-    </div>
+    </div></div>
+    
   )
 }
 
@@ -386,7 +396,11 @@ function renderSelectedShip(){
   // }
   
   }
-  renderedSelectedShips.push( <DetailedShip
+  renderedSelectedShips.push( 
+
+
+  
+  <DetailedShip
   key={selectedShip.id}
   img={selectedShip.img}
   stats = {fixedStats}
@@ -396,7 +410,9 @@ function renderSelectedShip(){
   id={selectedShip.id}
   statsToCompare={selectedShip.statsToCompare}
   compareFunction={setComparedShips}
-  /> )
+  parts={selectedShip.parts}
+  /> 
+ )
   }
   
   return renderedSelectedShips
@@ -448,7 +464,7 @@ function renderModal(){
   return (
 
     
-      <main className=" min-h-screen bg-gradient-to-b from-[#ffffff] to-[#9e9e9e] text-gray-500">
+      <main className=" min-h-screen bg-gradient-to-b from-[#ffffff] to-[#cecece] text-gray-500">
       <div className=" flex justify-between">
           <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] ml-4">
             Shipyard
@@ -535,8 +551,8 @@ function renderModal(){
 
 
         </div>
-        <div className="flex justify-center">
-          <div className="flex gap-4 overflow-auto py-4 mx-5">
+        <div className="flex justify-center ">
+          <div className="flex gap-4 flex-wrap  overflow-auto py-4 mx-5">
 {/*
             <DetailedShip
             img="loading.svg"
