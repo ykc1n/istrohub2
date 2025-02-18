@@ -15,9 +15,6 @@ export function ShipCopyButton( props: {shipey:string;}){
           setIsCopied("Copied!")
   }
 
-  // useEffect(()=>{
-  //     document.getElementById("copybutton").addEventListener("onclick",(e) =>{ copyText(data.shipey)})
-  // })
 
 
   return (
