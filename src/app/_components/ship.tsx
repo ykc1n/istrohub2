@@ -64,7 +64,7 @@ export default  function Ship(props:{
     }, [spec])
 
     return (
-        <div className={`p-5 bg-black ${ props.selected? 'bg-opacity-15' : 'bg-opacity-5'} aspect-3/3 min-w-1/4 rounded-lg m-4 `}> 
+        <div className={`p-5 bg-[0f0f0f] aspect-3/3 min-w-1/4 rounded-lg m-4 `}> 
             <div className="overflow-auto">
             <h2 className=" text-[clamp(0.9rem, 0.257rem + 2.143vw, 2.25rem)] font-bold text-center"
             style={{

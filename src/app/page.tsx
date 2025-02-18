@@ -510,14 +510,14 @@ function renderModal(){
   return (
 
     
-      <main className=" min-h-screen bg-gradient-to-b from-[#ffffff] to-[#cecece] text-gray-500">
+      <main className=" min-h-screen bg-[#0f0f0f] text-gray-300">
       <div className=" flex justify-between">
           <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] ml-4">
             Shipyard
           </h1>
 
 
-            
+            <div>
           <button className="mt-4 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-1 my-4 mx-[10%] transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
           onClick={
             (e)=>{
@@ -527,6 +527,14 @@ function renderModal(){
           >
           Upload a ship  
           </button>
+          <div className="display-flex">
+          <button className="rounded bg-black bg-opacity-10 p-1 transition-colors duration-300 hover:bg-opacity-20 ">
+            r26 mode
+          </button>
+
+          
+          </div>
+          </div>
       </div>
        <div className="flex my-2">
 
