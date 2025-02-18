@@ -60,7 +60,7 @@ function Filter(props:{
     <div className="flex justify-center gap-3 py-2">
       <div>
       {/* <p>Filter: </p> */}
-      <select className="mr-2 p-1 rounded bg-black bg-opacity-10 [&:not(option)]:transition-colors duration-300 hover:bg-opacity-20"
+      <select className="mr-2 p-1 rounded bg-neutral-950 bg-opacity-75 [&:not(option)]:transition-colors duration-300 hover:bg-black hover:text-neutral-200 hover:bg-opacity-100"
      onChange={(e)=>{
             const value = e.target.value as FilterName
            changeSelectedFilter(value);
@@ -73,7 +73,7 @@ function Filter(props:{
     </div>
     <div>
     {/* <p>Where: {selectedFilter}</p> */}
-    <select className="mr-2 p-1 rounded bg-black bg-opacity-10 [&:not(option)]:transition-colors duration-300 hover:bg-opacity-20"
+    <select className="mr-2 p-1 rounded bg-neutral-950 bg-opacity-75 [&:not(option)]:transition-colors duration-300 hover:bg-black hover:text-neutral-200 hover:bg-opacity-100"
     onChange={(e)=>{
       
       setCondtion(e.target.value as FilterCondition)}}
@@ -84,14 +84,14 @@ function Filter(props:{
       
     </select>
 
-    <input id="filterValue" type="number" name={selectedFilter} className=" rounded-lg text-black text-xl font-semibold text-center bg-black bg-opacity-10 px-2 mx-2 transition-colors duration-300 hover:bg-opacity-20"
+    <input id="filterValue" type="number" name={selectedFilter} className=" rounded-lg text-black text-xl font-semibold text-center bg-black bg-opacity-50 px-2 mx-2 transition-colors duration-300 hover:bg-opacity-100"
     onChange={(e)=> {
       setValue(e.target.value);
     }}
     >
     
     </input>
-    <input type="button" className={ "rounded-lg  font-semibold text-center bg-black bg-opacity-10 px-4 py-1 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white" }
+    <input type="button" className={ "rounded-lg  font-semibold text-center bg-black bg-opacity-50 px-4 py-1 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white" }
     onClick={ (e)=>{
         e.preventDefault()
        props.apply(selectedFilter,{
@@ -198,6 +198,10 @@ function DetailedShip(props:{
     let curStatStr = curStat.toString()
     let statColor = "bg-black bg-opacity-5 "
     let hoverColor = 'hover:bg-opacity-10'
+    let diffColor = "text-neutral-200" 
+    let diff = 0
+    let diffStr = " "
+    let difference = " "
     const statRecord = titleMap.get(stat) 
     if(!statRecord || curStat == 0){
       continue
@@ -208,25 +212,40 @@ function DetailedShip(props:{
     // if(compStat){
     // console.log(compStat)
     // }
+    let rev = titleMap.get(stat)[2]
 
-
-    if( Number(!titleMap.get(stat)[2])  ^ Number((curStat > compStat))){
-      statColor = "bg-green-500 bg-opacity-15"
+    if( Number(!rev)  ^ Number((curStat > compStat))){
+      statColor = "bg-green-600 bg-opacity-15"
       hoverColor = 'hover:bg-opacity-25'
+      diffColor = 'text-green-600'
+      difference = rev ? "↑" : "↓"
+      
     } else if( curStat == compStat){
       statColor = 'bg-black bg-opacity-5'
       hoverColor = 'hover:bg-opacity-10'
     } else {
-      statColor = "bg-red-300 bg-opacity-50"
-      hoverColor = 'hover:bg-opacity-80'
+      statColor = "bg-red-600 bg-opacity-15"
+      hoverColor = 'hover:bg-opacity-30'
+      diffColor = 'text-red-600'
+      difference = rev ? "↓" : "↑"
     }
+      diff = Math.abs(curStat - compStat) 
+      diffStr = diff
   }
+
+
 
 
     if(!Number.isInteger(curStat) && (typeof curStat) != 'string' ){
       //console.log(curStat)  
       curStatStr =  curStat.toFixed(2)
       }
+
+      if(!Number.isInteger(diff) && (typeof diff) != 'string' ){
+        //console.log(curStat)  
+        diffStr =  diff.toFixed(2)
+        }
+
     
     const newStats = (<div
     key={stat+curStatStr}
@@ -237,7 +256,10 @@ function DetailedShip(props:{
      
     curStatStr  +' '+statRecord[1]
      
-     } </p>
+     }<span className={`font-normal text-xs ${diffColor}`}>
+      {` ${diffStr} ${statRecord[1]} ${difference}`}
+     </span> </p>
+     
 
     </div>)
     renderedStats.push(newStats)
@@ -249,10 +271,10 @@ function DetailedShip(props:{
     
 
     
-    <div className="p-4 bg-black bg-opacity-5 rounded-lg flex  transition-transform transition-discrete max-w-[47%] overflow-auto">
+    <div className="p-4 bg-black bg-opacity-35 rounded-lg flex  transition-transform transition-discrete max-w-[47%] overflow-auto">
     <div>
 
-      <button className="rounded-full text-black text-lg font-semibold text-center bg-black bg-opacity-10 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-600 hover:text-white"
+      <button className="rounded-full text-neutral-400 text-lg font-semibold text-center bg-black bg-opacity-50 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-500 hover:text-white"
       onClick={(e) =>{props.clickFunction(
         (map)=>{
         //console.log("hmmmm")
@@ -332,7 +354,7 @@ shipey={('ship'+btoa(JSON.stringify(props.parts)))}
 
 
 
-const paginationSection = "rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
+const paginationSection = "rounded-lg text-neutral-400 text-2xl font-semibold text-center bg-black bg-opacity-30 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
 
 type NumFilterName =  "hp" | "mass" |"speed"
 type StrFilterName = "name"
@@ -510,25 +532,25 @@ function renderModal(){
   return (
 
     
-      <main className=" min-h-screen bg-[#0f0f0f] text-gray-300">
+      <main className=" min-h-screen  bg-gradient-to-b from-zinc-900 to-zinc-950  text-neutral-400 ">
       <div className=" flex justify-between">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] ml-4">
+          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] ml-4 text-neutral-300">
             Shipyard
           </h1>
 
 
             <div>
-          <button className="mt-4 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-1 my-4 mx-[10%] transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
+          <button className="mt-4 rounded-lg text-neutral-300 text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-1 my-4 mx-[10%] transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
           onClick={
             (e)=>{
               setUploadShipShown(!uploadShipShown)
             }
           }
           >
-          Upload a ship  
+          Ship Upload 
           </button>
-          <div className="display-flex">
-          <button className="rounded bg-black bg-opacity-10 p-1 transition-colors duration-300 hover:bg-opacity-20 ">
+          <div className="flex justify-center">
+          <button className="rounded-lg bg-black bg-opacity-40 p-2 transition-colors duration-300 hover:bg-opacity-60 ">
             r26 mode
           </button>
 
@@ -564,7 +586,7 @@ function renderModal(){
             <div>
 
             
-          <input name='name' className="mt-4 rounded-lg text-black text-2xl font-semibold bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-20">
+          <input name='name' className="mt-4 rounded-lg text-black text-2xl font-semibold bg-black bg-opacity-40 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75">
           </input> 
 
           
@@ -572,14 +594,14 @@ function renderModal(){
           
 
 
-          <button className="mt-2 rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
+          <button className="mt-2 rounded-lg  text-2xl font-semibold text-center bg-black bg-opacity-40 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
           type="submit"
           onSubmit={e => e.preventDefault()}
           >
             Search!
           </button> 
           <div className="p-2">searching on ship:
-            <select value={nameOrTitle} name="nameOrTitle" className=" bg-black bg-opacity-5 rounded p-1"
+            <select value={nameOrTitle} name="nameOrTitle" className=" bg-black bg-opacity-50 rounded p-1"
             onChange={(e)=>{
               setNameOrTitle(e.target.value)
             }}

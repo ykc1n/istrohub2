@@ -45,9 +45,9 @@ export default function Upload(
 
         className="p-12 r3xl flex justify-center">
             
-            <div className="bg-black bg-opacity-5 p-4 rounded-xl">
+            <div className="bg-black bg-opacity-20 p-4 rounded-xl">
                 <div>
-                        <button className="p-1 px-3 rounded-full bg-opacity-5 font-bold bg-black transition-color duration-300 hover:bg-red-600 hover:bg-opacity-75 hover:text-black"
+                        <button className="p-1 px-3 rounded-full bg-opacity-50 font-bold bg-black transition-color duration-300 hover:bg-red-600 hover:bg-opacity-75 hover:text-black"
                         onClick={()=>{
                             props.closeFunction(false)
                         }}
@@ -55,7 +55,7 @@ export default function Upload(
                             X
                         </button>
                     </div>
-                <p className="font-bold text-5xl p-5">Ship Upload</p>
+                <p className="font-bold text-neutral-300 text-5xl p-5">Ship Upload</p>
                 <form 
                 action={(e)=>{
                     
@@ -84,7 +84,7 @@ export default function Upload(
                     <p className="text-center">Name your ship</p> 
                     <div className="flex justify-center py-2">  
                                          
-                    <input type="text" name="title" className="bg-black bg-opacity-5 text-xl font-semibold text-center rounded mx-auto transition-all duration-300 hover:bg-opacity-10 p-2" />
+                    <input type="text" name="title" className="bg-black bg-opacity-40 text-xl font-semibold text-center rounded mx-auto transition-all duration-300 hover:bg-opacity-60 p-2" />
                 </div>
                 {title!=''?(
                     <h1 className="italic text-center">{title}</h1>
@@ -110,7 +110,7 @@ export default function Upload(
                     </div>
                     <p className="text-center my-3">Paste shipey code</p>
                     <div className="flex justify-center ">
-                    <input type="text" className="bg-black bg-opacity-5 text-xl font-semibold text-center rounded mx-auto transition-all duration-300 hover:bg-opacity-10 p-2"
+                    <input type="text" className="bg-black bg-opacity-40 text-xl font-semibold text-center rounded mx-auto transition-all duration-300 hover:bg-opacity-60 p-2"
                     onChange={
                         (e)=>{
                             void changeImage(e.target.value, color)
@@ -124,7 +124,7 @@ export default function Upload(
                         </p>
                     <div className="my-4 flex justify-center">
                         
-                    <input type="text" name='color' className="bg-black bg-opacity-5 text-xl font-semibold text-center rounded mx-auto transition-all duration-300 hover:bg-opacity-10 p-2"
+                    <input type="text" name='color' className="bg-black bg-opacity-40 text-xl font-semibold text-center rounded mx-auto transition-all duration-300 hover:bg-opacity-60 p-2"
                     onChange={
                         (e)=>{
                             console.log(hexToRgb(e.target.value))
@@ -153,7 +153,7 @@ export default function Upload(
                     
 
                     <div className="flex justify-center">
-                        <button type="submit" className="bg-black bg-opacity-5 text-lg font-bold p-2 transition-all duration-300 rounded-lg hover:bg-opacity-75 hover:text-white"
+                        <button type="submit" className="bg-black bg-opacity-40 text-lg font-bold p-2 transition-all duration-300 rounded-lg hover:bg-opacity-75 hover:text-white"
                         onSubmit={(e)=>{
                             e.preventDefault()
                         }}

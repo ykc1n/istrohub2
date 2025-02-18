@@ -26,7 +26,7 @@ export function ShipCopyButton( props: {shipey:string;}){
       onClick={(e)=>{
           copyText(props.shipey)
       }}
-      className="rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
+      className="rounded-lg text-neutral-400 text-2xl font-semibold text-center bg-black bg-opacity-50 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-100 hover:text-white"
       >
           {isCopied}
       </button>
@@ -64,9 +64,9 @@ export default  function Ship(props:{
     }, [spec])
 
     return (
-        <div className={`p-5 bg-[0f0f0f] aspect-3/3 min-w-1/4 rounded-lg m-4 `}> 
+        <div className={`p-5 bg-black bg-opacity-30 aspect-3/3 min-w-1/4 rounded-lg m-4 `}> 
             <div className="overflow-auto">
-            <h2 className=" text-[clamp(0.9rem, 0.257rem + 2.143vw, 2.25rem)] font-bold text-center"
+            <h2 className=" text-[clamp(0.9rem, 0.257rem + 2.143vw, 2.25rem)] text-neutral-200 font-bold text-center"
             style={{
                 fontSize:"clamp(0.9rem, 0.257rem + 2.143vw, 2.5rem)"
             }}
