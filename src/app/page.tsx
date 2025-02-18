@@ -1,14 +1,10 @@
 
 'use client'
-import Link from "next/link";
 import Image from "next/image";
-import { LatestPost } from "~/app/_components/post";
 import { api } from "~/trpc/react";
 import Ship from "./_components/ship";
 import { useState } from "react";
 
-import { Ships } from "./_components/shipLoader";
-import { title } from "process";
 import Upload from "./_components/upload";
 import { ShipCopyButton } from "./_components/ship";
 
@@ -48,7 +44,7 @@ function Filter(props:{
     ['<', 'is less than'],
     ['>', 'is greater than']
   ])
-  const filterTargets = []
+  const filterTargets:JSX.Element[] = []
   function renderFilterTargets(){
     for(const filter of props.availableFilters){
       filterTargets.push(
@@ -88,7 +84,7 @@ function Filter(props:{
       
     </select>
 
-    <input id="filterValue" name={selectedFilter} className=" rounded-lg text-black text-xl font-semibold text-center bg-black bg-opacity-10 px-2 mx-2 transition-colors duration-300 hover:bg-opacity-20"
+    <input id="filterValue" type="number" name={selectedFilter} className=" rounded-lg text-black text-xl font-semibold text-center bg-black bg-opacity-10 px-2 mx-2 transition-colors duration-300 hover:bg-opacity-20"
     onChange={(e)=> {
       setValue(e.target.value);
     }}
@@ -134,14 +130,26 @@ function AppliedFilter(props:{
         X
       </button>
       
+      <span className="font-semibold">
       {
-        `where: ${props.filter.name} ${props.filter.filterOpts.condition} ${props.filter.filterOpts.value}` 
-      }
+        ` ${props.filter.name}  ` 
+      }</span>
+      <span className="">
+        {`${props.filter.filterOpts.condition}`} 
+      </span>
+      
+      <code>
+      {
+        ` ${
+       props.filter.filterOpts.value}`
+      }</code>
 
      
       </div>
   )
 }
+
+type Stats = Record<string, number>
 
 function DetailedShip(props:{
   img:string,
@@ -150,7 +158,7 @@ function DetailedShip(props:{
   name:string,
   id:number,
   clickFunction:(param:(map:Map<number,object>)=>object)=>void,
-  compareFunction:(param:(arr:[])=>[])=>void,
+  compareFunction:(param:(arr:number[])=>number[])=>void,
   statsToCompare:object,
   //isBeingCompared:boolean
   parts:object, 
@@ -163,7 +171,7 @@ function DetailedShip(props:{
 
 
 
-  const titleMap = new Map([
+  const titleMap = new Map<string, [string,string,boolean]>([
     ['hp',['HP','hp',true]],
     ['cost',['Cost','$',false]],
     ['mass',['Mass','T',false]],
@@ -185,22 +193,24 @@ function DetailedShip(props:{
 
   const renderedStats = []
   //console.log(props.stats.mass)
-  for(const stat in props.stats){
-    let curStat = props.stats[stat]
+  for(const [stat, curStat] of Object.entries(props.stats)){
+    //const curStat = props.stats[stat]
+    let curStatStr = curStat.toString()
     let statColor = "bg-black bg-opacity-5 "
     let hoverColor = 'hover:bg-opacity-10'
-    if(!titleMap.has(stat) || curStat == 0){
+    const statRecord = titleMap.get(stat) 
+    if(!statRecord || curStat == 0){
       continue
     }
     if(isBeingCompared){
     const compStat =  props.statsToCompare[stat]
     
-    if(compStat){
-    console.log(compStat)
-    }
+    // if(compStat){
+    // console.log(compStat)
+    // }
 
 
-    if( titleMap.get(stat)[2] ^ (curStat > compStat)){
+    if( Number(!titleMap.get(stat)[2])  ^ Number((curStat > compStat))){
       statColor = "bg-green-500 bg-opacity-15"
       hoverColor = 'hover:bg-opacity-25'
     } else if( curStat == compStat){
@@ -215,17 +225,17 @@ function DetailedShip(props:{
 
     if(!Number.isInteger(curStat) && (typeof curStat) != 'string' ){
       //console.log(curStat)  
-      curStat =  curStat.toFixed(2)
+      curStatStr =  curStat.toFixed(2)
       }
     
     const newStats = (<div
-    key={stat+curStat}
+    key={stat+curStatStr}
     className={`text-base font-bold p-1 ${statColor} basis-0 flex-grow m-1 rounded-lg transition-colors duration-300 ${hoverColor}`}
     >
-      <p className="text-xs md:text-base  text-nowrap text-center m-1 overflow-auto">{titleMap.get(stat)[0]}</p>
+      <p className="text-xs md:text-base  text-nowrap text-center m-1 overflow-auto">{statRecord[0]}</p>
      <p className="font-normal text-center"> {
      
-    curStat  +' '+titleMap.get(stat)[1]
+    curStatStr  +' '+statRecord[1]
      
      } </p>
 
@@ -245,12 +255,12 @@ function DetailedShip(props:{
       <button className="rounded-full text-black text-lg font-semibold text-center bg-black bg-opacity-10 px-2 transition-colors duration-300 hover:bg-opacity-75 hover:bg-red-600 hover:text-white"
       onClick={(e) =>{props.clickFunction(
         (map)=>{
-        console.log("hmmmm")
+        //console.log("hmmmm")
         const newMap = new Map(map)
-        console.log(newMap)
+        //console.log(newMap)
         newMap.delete(props.id)
-        console.log(newMap)
-        console.log(props.id)
+        //console.log(newMap)
+        //console.log(props.id)
         return newMap
       })
     }
@@ -367,6 +377,7 @@ export default function Home() {
   const [selectedShips, setSelectedShips] = useState( new Map<number,{id:number,stats:object,name:string, img:string}>())
   const [comparedShips, setComparedShips] = useState([])
   const [uploadShipShown, setUploadShipShown] = useState(false)
+  const [nameOrTitle, setNameOrTitle] = useState("name");
   const utils = api.useUtils()
   // const [queryState, setQueryState] = useState(true)
 
@@ -384,7 +395,7 @@ export default function Home() {
 const availableFilters = ["hp", "mass", "speed"]
 
 if(comparedShips.length >= 2){
-  console.log("comparing ships!")
+  //console.log("comparing ships!")
   const newMap = selectedShips
   const newShip1 = selectedShips.get(comparedShips[0])
   newShip1.statsToCompare = selectedShips.get(comparedShips[1])?.stats
@@ -400,19 +411,19 @@ if(comparedShips.length >= 2){
   setComparedShips([]);
   
 }
-console.log("re-render!")
+//console.log("re-render!")
 
 function renderSelectedShip(){
   const renderedSelectedShips = []
-  console.log(selectedShips)
+  //console.log(selectedShips)
   for (const ship of selectedShips){
   const selectedShip = ship[1]
   if (selectedShip.id < 0){
     continue
   }
   //console.log(selectedShip.stats.weapons)
-  let shipweapons = selectedShip.stats.weapons;
-  let fixedStats = selectedShip.stats
+  //const shipweapons = selectedShip.stats.weapons;
+  const fixedStats = selectedShip.stats
   delete fixedStats.weapons
   delete fixedStats.ais
   delete fixedStats.center
@@ -453,7 +464,7 @@ function applyFilter(name:FilterName,opts:FilterOptions){
   setFilter(filters => {filters.set(name, opts)
     return new Map(filters);
   });
-  console.log(filters);
+  //console.log(filters);
 }
 
 function removeFilter(name:FilterName){
@@ -478,16 +489,20 @@ function renderFilters(){
               remove={removeFilter}
               key={filt[0]+filt[1].condition+filt[1].value}
                 /> 
-              console.log()
+              //console.log()
               renderedFilters.push(renderedFilter);
             }
           }
             return renderedFilters; 
 }
 
+
+
 function renderModal(){
   if(uploadShipShown){
-          return <Upload/>
+          return <Upload
+          closeFunction={setUploadShipShown}
+          />
         }
         return (<></>)
 }
@@ -530,15 +545,19 @@ function renderModal(){
                 await utils.invalidate();
                 return;
               }
-              filters.set('name', { condition:"=", value:value});
+              //console.log(e.get("nameOrTitle"));
+              filters.set(nameOrTitle, { condition:"has", value:value});
 
               await utils.invalidate();
             }
           }>
 
-          <div className="">
-          {/* <input name='name' className="mt-4 rounded-lg text-black text-2xl font-semibold bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-20">
-          </input> */}
+          <div className="flex justify-center">
+            <div>
+
+            
+          <input name='name' className="mt-4 rounded-lg text-black text-2xl font-semibold bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-20">
+          </input> 
 
           
 
@@ -551,7 +570,16 @@ function renderModal(){
           >
             Search!
           </button> 
-
+          <div className="p-2">searching on ship:
+            <select value={nameOrTitle} name="nameOrTitle" className=" bg-black bg-opacity-5 rounded p-1"
+            onChange={(e)=>{
+              setNameOrTitle(e.target.value)
+            }}
+            > 
+              <option value={"name"}>Name</option>
+              <option value={"title"}>Title</option>
+            </select>
+              </div>
           <div className="flex flex- flex-wrap mt-4 transition-all duration-300">
 
 
@@ -561,7 +589,7 @@ function renderModal(){
          renderFilters() 
         }
 
-          
+          </div>
           </div>
           </div>
 
@@ -582,7 +610,7 @@ function renderModal(){
 
         </div>
         <div className="flex justify-center w-[100%]">
-          <div className="flex justify-center gap-4 flex-wrap  overflow-auto py-4 mx-5">
+          <div className="flex justify-center gap-4 flex-wrap w-[100%] overflow-auto py-4 mx-5">
           {renderSelectedShip()}
 
           </div>

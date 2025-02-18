@@ -34,17 +34,25 @@ export  const shiprouter = createTRPCRouter({
         console.log(input)
         
         for( const f of input.filters){
-            const condition = f[1].condition
+            let condition = f[1].condition
             let  comparitor = f[1].value
             // console.log(f[1])
             // if(f[0] != "name"){
             //     f[0] = 
             // }
             let term = ''
-            if(f[0] == "name"){
-                term =  `stats->>'${f[0]}'`
-                 comparitor = `'${comparitor}'`
-            } else {
+            if(f[0] == "name" ){
+                term =  `to_tsvector('english',stats->>'${f[0]}')`
+                 condition = `@@`
+                 comparitor = `websearch_to_tsquery('english','${f[1].value}')`
+            } 
+            else if(f[0]=="title"){
+                term =  `to_tsvector('english',name)`
+                condition = `@@`
+                comparitor = `websearch_to_tsquery('english','${f[1].value}')`
+            }
+            
+            else {
                  term =  `CAST(stats->'${f[0]}' AS INTEGER)`
 
             }

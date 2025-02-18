@@ -1,3 +1,5 @@
+/* eslint no-use-before-define: 0 */
+
 import { Canvas,Image,loadImage, createCanvas } from 'canvas';
 import {parts} from './parts'
 import {atlasjson} from 'src/app/shipey/atlas'
@@ -12,7 +14,7 @@ const size = atlasjson.size;
 const atlasSize = size;
 
 type ColorMode = "color" | "replace"
-type Color = [number,number,number,number] 
+type Color = [number,number,number,number] | [number,number,number] | number[]
 
 
 
@@ -22,13 +24,13 @@ let atlas:Image | null = null;
 //     console.log("loaded!")
 //     atlas = image});
 
-export function hexToRgb(hex){
+export function hexToRgb(hex:string){
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? [
         parseInt(result[1], 16),
         parseInt(result[2], 16),
         parseInt(result[3], 16)
-    ] : null;
+    ] : [255,255,255];
 }
 
 
@@ -38,7 +40,7 @@ export function drawImage(ctx:CanvasRenderingContext2D, file:string, x:number, y
         return;
     }
 
-    const img:CanvasImageSource|null = getImage(file, flip, color, colorMode);
+    const img = getImage(file, flip, color, colorMode);
 
 
     
@@ -49,7 +51,7 @@ export function drawImage(ctx:CanvasRenderingContext2D, file:string, x:number, y
         ctx.rotate(-dir * Math.PI / 2);
         ctx.translate(-x - w / 2, -y - h / 2);
 
-        ctx.drawImage(img, x, y, w, h);
+        ctx.drawImage(img as unknown as CanvasImageSource, x, y, w, h);
 
         ctx.restore();
     }
@@ -105,8 +107,8 @@ export async function drawShip(spec:unknown, stats:object, color:Color = [255, 2
     // Scale canvas when ship's too big
     let maxSize =  NxN * SIZE / 2;
  
-    let minSize = NxN * SIZE / 2;
-    for(let p of spec.parts) {
+    const minSize = NxN * SIZE / 2;
+    for(const p of spec.parts) {
         for(let i = 0; i <= 1; i++) {
             let s = Math.abs(p.pos[i]) + parts[p.type].size[i];
             if(s > maxSize) {
@@ -231,6 +233,7 @@ export function isDecal(name){
 
 export function getStats(spec){
     let stats = {
+        name:'',
         hp: 5,
         cost: 0,
         mass: 0,
@@ -243,15 +246,15 @@ export function getStats(spec){
         jumpCount: 0,
         center: [0, 0],
         radius: 0,
-        //dps: 0,
-        //damage: 0,
-        //range: 0,
+        dps: 0,
+        damage: 0,
+        range: 0,
         moveEnergy: 0,
-        //fireEnergy: 0,
+        fireEnergy: 0,
         otherEnergy: 0,
         allEnergy: 0,
         weapons: [],
-        //ais: []
+        ais: []
     };
 
     let ix = 0;

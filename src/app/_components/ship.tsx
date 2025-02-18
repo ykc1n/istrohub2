@@ -1,16 +1,18 @@
 'use client'
 
-import { api } from "~/trpc/react"
 
 import Image from "next/image"
-import { useEffect, useMemo, useState } from "react";
+import {  useMemo, useState } from "react";
 import { drawShip, getStats, hexToRgb} from "../shipey/shipey";
 
 export function ShipCopyButton( props: {shipey:string;}){
+
+    const [isCopied, setIsCopied] = useState("Copy Ship")
+
     function copyText(text:string){
             //console.log(text);
           void navigator.clipboard.writeText(text)
-          alert("shipey copied")
+          setIsCopied("Copied!")
   }
 
   // useEffect(()=>{
@@ -19,6 +21,9 @@ export function ShipCopyButton( props: {shipey:string;}){
 
 
   return (
+  <>
+    <div className="">
+    </div>
       <button
       
       onClick={(e)=>{
@@ -26,8 +31,9 @@ export function ShipCopyButton( props: {shipey:string;}){
       }}
       className="rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
       >
-          Copy ship
+          {isCopied}
       </button>
+    </>
   )
 
 }
@@ -37,7 +43,7 @@ export default  function Ship(props:{
     parts:string,
     name:string,
     id:number,
-    clickFunction: (id:number, name:string, stats:object)=>void,
+    clickFunction: (param:(selectedShips:Map<number, object>)=>Map<number,object>)=>void,
     selected:boolean,
     color:string
 }   ){
@@ -45,7 +51,7 @@ export default  function Ship(props:{
 
     
     const [img,setImg] = useState("loading.svg")
-    const [spec,setSpec] = useState(props.parts);
+    const [spec] = useState(props.parts);
     const [title, setTitle] = useState('')
 
 
@@ -83,9 +89,9 @@ export default  function Ship(props:{
              alt="not yet"
              className=" w-[90%] transition-all duration-300 scale-100 hover:scale-105"
              onClick={ (e) => {
-                console.log("clicked..")
+                //console.log("clicked..")
                 props.clickFunction( (selectedShips) => {
-                    let newMap = new Map(selectedShips)
+                    const newMap = new Map(selectedShips)
                     newMap.set(props.id,
                     {id: props.id, 
                     name: props.name, 

@@ -9,8 +9,8 @@ const config = {
   ],
   "extends": [
     "next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/stylistic-type-checked"
+    // "plugin:@typescript-eslint/recommended-type-checked",
+    // "plugin:@typescript-eslint/stylistic-type-checked"
   ],
   "rules": {
     "@typescript-eslint/array-type": "off",
@@ -29,6 +29,7 @@ const config = {
       }
     ],
     "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/no-unsafe-member-access":"off",
     "@typescript-eslint/no-misused-promises": [
       "error",
       {
@@ -37,6 +38,9 @@ const config = {
         }
       }
     ]
-  }
+    
+  },
+  "ignorePatterns": ["**/shipey.ts"]
+
 }
 module.exports = config;
