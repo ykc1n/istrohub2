@@ -122,6 +122,7 @@ export async function drawShip(spec:unknown, stats:object, color:Color = [255, 2
     let rect = [0, 0, canvas.width, canvas.height];
     if(scale > 1) {
         rect = [-translation[0], -translation[1], scale * canvas.width, scale * canvas.height];
+        console.log(scale)
         ctx.scale(1/scale, 1/scale);
         ctx.translate(...translation);
     }

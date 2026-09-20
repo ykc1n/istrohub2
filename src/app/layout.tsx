@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+//const ThemeContext = createContext("light")
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {

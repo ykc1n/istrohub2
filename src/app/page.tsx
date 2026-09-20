@@ -1,6 +1,7 @@
 
 'use client'
 import Image from "next/image";
+//import "~/styles/page.css";
 import { api } from "~/trpc/react";
 import Ship from "./_components/ship";
 import { useState } from "react";
@@ -400,6 +401,7 @@ export default function Home() {
   const [comparedShips, setComparedShips] = useState([])
   const [uploadShipShown, setUploadShipShown] = useState(false)
   const [nameOrTitle, setNameOrTitle] = useState("name");
+  const [darkMode, setDarkMode] = useState("light")
   const utils = api.useUtils()
   // const [queryState, setQueryState] = useState(true)
 
@@ -530,17 +532,18 @@ function renderModal(){
 }
 
   return (
+    <div className={darkMode}>
 
     
-      <main className=" min-h-screen  bg-gradient-to-b from-zinc-900 to-zinc-950  text-neutral-400 ">
+      <main className={`min-h-screen transition-all duration-300  bg-gradient-to-b from-[#ffffff] to-[#cecece]  dark:bg-gradient-to-b dark:from-zinc-900 dark:to-zinc-950  dark:text-neutral-400 text-gray-500 `}>
       <div className=" flex justify-between">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] ml-4 text-neutral-300">
+          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] ml-4 dark:text-neutral-300">
             Shipyard
           </h1>
 
 
             <div>
-          <button className="mt-4 rounded-lg text-neutral-300 text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-1 my-4 mx-[10%] transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
+          <button className="mt-4 rounded-lg text-black dark:text-neutral-300 text-2xl font-semibold text-center bg-black bg-opacity-15 dark:bg-opacity-30 px-4 py-1 my-4 mx-[10%] transition-colors duration-300 dark:hover:bg-opacity-75 hover:bg-opacity-75  hover:text-white"
           onClick={
             (e)=>{
               setUploadShipShown(!uploadShipShown)
@@ -549,9 +552,15 @@ function renderModal(){
           >
           Ship Upload 
           </button>
+
           <div className="flex justify-center">
-          <button className="rounded-lg bg-black bg-opacity-40 p-2 transition-colors duration-300 hover:bg-opacity-60 ">
-            r26 mode
+          <button className="rounded-lg dark:bg-black bg-opacity-10 dark:bg-opacity-40 p-2 transition-all duration-500  hover:bg-opacity-20 dark:hover:bg-opacity-90 "
+          onClick={(e)=>{
+            e.preventDefault()
+            setDarkMode(darkMode=="dark"?"light":"dark")
+          }}
+          >
+            {darkMode=="dark"?"r26 mode":"therxyy mode"}
           </button>
 
           
@@ -736,5 +745,6 @@ function renderModal(){
 
 
           </main>
+        </div>
       );
 }
