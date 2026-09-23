@@ -5,11 +5,14 @@ import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 
+
 export const metadata: Metadata = {
-  title: "Istrohub",
-  description: "Istrohub 2.0",
+  title: "Shipyard",
+  description: "Shipyard",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
+
+//const ThemeContext = createContext("light")
 
 export default function RootLayout({
   children,

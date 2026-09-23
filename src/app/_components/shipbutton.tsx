@@ -19,9 +19,9 @@ export function ShipCopyButton( props: {shipey:string;}){
         onClick={(e)=>{
             copyText(props.shipey)
         }}
-        className="rounded-lg font-semibold text-center bg-slate-50 p-2 transition-colors duration-300 hover:bg-slate-500 hover:text-white"
+        className="rounded-lg text-black text-2xl font-semibold text-center bg-black bg-opacity-10 px-4 py-2 mx-2 transition-colors duration-300 hover:bg-opacity-75 hover:text-white"
         >
-            Copy shipey
+            Copy ship
         </button>
     )
 
