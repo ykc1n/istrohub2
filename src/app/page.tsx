@@ -4,8 +4,9 @@ import Image from "next/image";
 //import "~/styles/page.css";
 import { api } from "~/trpc/react";
 import Ship from "./_components/ship";
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 
+import { type SelectedShip, type ShipStats } from "./shipey/types";
 import Upload from "./_components/upload";
 import { ShipCopyButton } from "./_components/ship";
 
@@ -154,13 +155,12 @@ type Stats = Record<string, number>
 
 function DetailedShip(props:{
   img:string,
-  stats:object,
-  weapons:object,
+  stats:ShipStats,
   name:string,
   id:number,
-  clickFunction:(param:(map:Map<number,object>)=>object)=>void,
+  clickFunction:Dispatch<SetStateAction<Map<number,SelectedShip>>>,
   compareFunction:(param:(arr:number[])=>number[])=>void,
-  statsToCompare:object,
+  statsToCompare:Partial<ShipStats>,
   //isBeingCompared:boolean
   parts:object, 
   color:string
@@ -195,6 +195,7 @@ function DetailedShip(props:{
   const renderedStats = []
   //console.log(props.stats.mass)
   for(const [stat, curStat] of Object.entries(props.stats)){
+    if (typeof curStat !== "number") continue;
     //const curStat = props.stats[stat]
     let curStatStr = curStat.toString()
     let statColor = "bg-black bg-opacity-5 "
@@ -208,12 +209,13 @@ function DetailedShip(props:{
       continue
     }
     if(isBeingCompared){
-    const compStat =  props.statsToCompare[stat]
+    const compStat =  props.statsToCompare[stat as keyof ShipStats]
     
     // if(compStat){
     // console.log(compStat)
     // }
-    let rev = titleMap.get(stat)[2]
+    if (typeof compStat !== "number") continue;
+    const rev = statRecord[2]
 
     if( Number(!rev)  ^ Number((curStat > compStat))){
       statColor = "bg-green-600 bg-opacity-15"
@@ -231,7 +233,7 @@ function DetailedShip(props:{
       difference = rev ? "↓" : "↑"
     }
       diff = Math.abs(curStat - compStat) 
-      diffStr = diff
+      diffStr = String(diff)
   }
 
 
@@ -364,7 +366,7 @@ type FilterName = NumFilterName | StrFilterName
 type FilterEquals = "="
 type FilterLessThan = "<"
 type FilterGreaterThan = '>'
-type FilterCondition = FilterEquals | FilterLessThan | FilterGreaterThan
+type FilterCondition = FilterEquals | FilterLessThan | FilterGreaterThan | "has"
 type FilterOptions = {
   condition: FilterCondition,
   value: string
@@ -397,10 +399,10 @@ export default function Home() {
 
   const [page,setPage] = useState(0)
   const [filters,setFilter] =  useState(new Map<FilterName, FilterOptions>())
-  const [selectedShips, setSelectedShips] = useState( new Map<number,{id:number,stats:object,name:string, img:string}>())
-  const [comparedShips, setComparedShips] = useState([])
+  const [selectedShips, setSelectedShips] = useState( new Map<number,SelectedShip>())
+  const [comparedShips, setComparedShips] = useState<number[]>([])
   const [uploadShipShown, setUploadShipShown] = useState(false)
-  const [nameOrTitle, setNameOrTitle] = useState("name");
+  const [nameOrTitle, setNameOrTitle] = useState<FilterName>("name");
   const [darkMode, setDarkMode] = useState("light")
   const utils = api.useUtils()
   // const [queryState, setQueryState] = useState(true)
@@ -419,21 +421,16 @@ export default function Home() {
 const availableFilters = ["hp", "mass", "speed"]
 
 if(comparedShips.length >= 2){
-  //console.log("comparing ships!")
-  const newMap = selectedShips
-  const newShip1 = selectedShips.get(comparedShips[0])
-  newShip1.statsToCompare = selectedShips.get(comparedShips[1])?.stats
-  newMap.delete(comparedShips[0])
-  //setSelectedShips(newMap);
-  newMap.set(comparedShips[0], newShip1)
-  const newShip2 = selectedShips.get(comparedShips[1])
-  newShip2.statsToCompare = selectedShips.get(comparedShips[0])?.stats
-  newMap.delete(comparedShips[1])
-    //setSelectedShips(newMap);
-  newMap.set(comparedShips[1], newShip2)
-  setSelectedShips(newMap);
+  const [firstId, secondId] = comparedShips;
+  const first = firstId === undefined ? undefined : selectedShips.get(firstId);
+  const second = secondId === undefined ? undefined : selectedShips.get(secondId);
+  if (first && second) {
+    const newMap = new Map(selectedShips);
+    newMap.set(first.id, { ...first, statsToCompare: second.stats });
+    newMap.set(second.id, { ...second, statsToCompare: first.stats });
+    setSelectedShips(newMap);
+  }
   setComparedShips([]);
-  
 }
 //console.log("re-render!")
 
@@ -448,9 +445,7 @@ function renderSelectedShip(){
   //console.log(selectedShip.stats.weapons)
   //const shipweapons = selectedShip.stats.weapons;
   const fixedStats = selectedShip.stats
-  delete fixedStats.weapons
-  delete fixedStats.ais
-  delete fixedStats.center
+
   if(comparedShips.length >= 2){
 
   
@@ -470,7 +465,6 @@ function renderSelectedShip(){
   img={selectedShip.img}
   stats = {fixedStats}
   name={selectedShip.name}
-  weapons = {selectedShip.stats.weapons}
   clickFunction={setSelectedShips}
   id={selectedShip.id}
   statsToCompare={selectedShip.statsToCompare}
@@ -612,7 +606,7 @@ function renderModal(){
           <div className="p-2">searching on ship:
             <select value={nameOrTitle} name="nameOrTitle" className=" bg-black bg-opacity-50 rounded p-1"
             onChange={(e)=>{
-              setNameOrTitle(e.target.value)
+              setNameOrTitle(e.target.value as FilterName)
             }}
             > 
               <option value={"name"}>Name</option>
@@ -667,11 +661,11 @@ function renderModal(){
                       key = {ship.id}
                       
                       id={ship.id}
-                      name = {ship.name}
+                      name = {ship.name ?? ""}
                       parts= {ship.parts}
                       selected = {selectedShips.has(ship.id)}
                       clickFunction= {setSelectedShips}
-                      color = {ship.color}
+                      color = {ship.color ?? "FFFFFF"}
                       
                       /> 
                       )

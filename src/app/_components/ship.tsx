@@ -1,8 +1,9 @@
 'use client'
 
 
+import { shipSpecSchema, type SelectedShip } from '../shipey/types';
 import Image from "next/image"
-import {  useMemo, useState } from "react";
+import {  useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { drawShip, getStats, hexToRgb} from "../shipey/shipey";
 
 export function ShipCopyButton( props: {shipey:string;}){
@@ -37,10 +38,10 @@ export function ShipCopyButton( props: {shipey:string;}){
 
 
 export default  function Ship(props:{
-    parts:string,
+    parts:unknown,
     name:string,
     id:number,
-    clickFunction: (param:(selectedShips:Map<number, object>)=>Map<number,object>)=>void,
+    clickFunction: Dispatch<SetStateAction<Map<number, SelectedShip>>>,
     selected:boolean,
     color:string
 }   ){
@@ -48,20 +49,22 @@ export default  function Ship(props:{
 
     
     const [img,setImg] = useState("loading.svg")
-    const [spec] = useState(props.parts);
+    const [spec] = useState(() => shipSpecSchema.parse(props.parts));
     const [title, setTitle] = useState('')
 
 
 
-    const i = useMemo( async ()=>{
-        const stats = getStats(spec)
-         setTitle(stats.name)
-         //console.log(props.color)
-         //console.log(hexToRgb(props.color))
-        const i = await drawShip(spec, stats, hexToRgb(props.color))
-        setImg(i);
-        return i
-    }, [spec])
+    useEffect(() => {
+        let cancelled = false;
+        const stats = getStats(spec);
+        setTitle(stats.name);
+        void drawShip(spec, stats, hexToRgb(props.color)).then(image => {
+            if (!cancelled) setImg(image);
+        }).catch(() => {
+            if (!cancelled) setImg("loading.svg");
+        });
+        return () => { cancelled = true; };
+    }, [spec, props.color]);
 
     return (
         <div className={`p-5 bg-black dark:bg-opacity-30 bg-opacity-10 aspect-3/3 min-w-1/4 rounded-lg m-4 `}> 
@@ -94,7 +97,7 @@ export default  function Ship(props:{
                     name: props.name, 
                     img: img,
                     stats: getStats(spec),
-                    parts: props.parts,
+                    parts: spec,
                     statsToCompare: {},
                     color: props.color
                     })

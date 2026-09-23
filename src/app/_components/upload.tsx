@@ -13,7 +13,7 @@ type Spec = {
 
 export default function Upload(
     props:{
-        closeFunction: (boolean)=>void,
+        closeFunction: (shown: boolean)=>void,
     }
 ){
 

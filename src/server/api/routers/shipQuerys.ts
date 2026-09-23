@@ -5,7 +5,7 @@ import { DummyShipArr } from "./shipArrData";
 import { count } from "console";
 import { ships } from "~/server/db/schema";
 import { Sql } from "postgres";
-import { SQL,exists, sql, and, not, isNull, eq} from "drizzle-orm";
+import { type SQL,exists, sql, and, not, isNull, eq} from "drizzle-orm";
 import { Input } from "postcss";
 
 

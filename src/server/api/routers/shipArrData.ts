@@ -1,4 +1,4 @@
-export const DummyShipArr:ShipData[] =[ 
+export const DummyShipArr: { name: string; shipey: string }[] =[
 { 
 		name:  "Ship0",
 		shipey: "shipeyJwYXJ0cyI6W3sicG9zIjpbMCwwXSwidHlwZSI6Ik1vdW50MzAiLCJkaXIiOjB9LHsicG9zIjpbLTEwLC00MF0sInR5cGUiOiJFbmdpbmUwNCIsImRpciI6MH0seyJwb3MiOlsxMCwtMzBdLCJ0eXBlIjoiQmF0dGVyeTF4MSIsImRpciI6MH0seyJwb3MiOlsxMCwtNTBdLCJ0eXBlIjoiV2luZzF4MU5vdGNoIiwiZGlyIjowfSx7InBvcyI6WzAsMF0sInR5cGUiOiJUb3JwVHVycmV0IiwiZGlyIjowfV0sIm5hbWUiOiIiLCJhaVJ1bGVzIjpbXX0 ",
